@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wireless_order_system/register.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -8,46 +9,43 @@ class Home extends StatefulWidget {
 class FullAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool hasParent;
+  final Function onBackPressed;
 
-  const FullAppbar({Key key, this.title, this.hasParent}) : super(key: key);
+  const FullAppbar({Key key, this.title, this.hasParent, this.onBackPressed}) : super(key: key);
 
-  void _onBackPressed(){
-
-  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(child:
-    Card(
-        color: Colors.white,
-        elevation: 1,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0)
-        ),
-        margin: EdgeInsets.only(left: 8.0, right: 8.0),
-        child:Padding(
-          padding: EdgeInsets.all(16.0),
-          child:Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if(hasParent) IconButton(
-                  padding: EdgeInsets.zero,
-                  color: Theme.of(context).primaryColor,
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: _onBackPressed,
-                  constraints: BoxConstraints(),
-                ),
-                hasParent ? Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Text(title,style: Theme.of(context).textTheme.headline6)
-                ) : Text(title,style: Theme.of(context).textTheme.headline6)
-              ]
+      Card(
+          color: Colors.white,
+          elevation: 1,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0)
           ),
-        )
-    )
+          margin: EdgeInsets.only(left: 8.0, right: 8.0),
+          child:Padding(
+            padding: EdgeInsets.all(16.0),
+            child:Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if(hasParent) IconButton(
+                    onPressed: onBackPressed,
+                    padding: EdgeInsets.zero,
+                    color: Theme.of(context).primaryColor,
+                    icon: Icon(Icons.arrow_back),
+                    constraints: BoxConstraints(),
+                  ),
+                  hasParent ? Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Text(title,style: Theme.of(context).textTheme.headline6)
+                  ) : Text(title,style: Theme.of(context).textTheme.headline6)
+                ]
+            ),
+          )
+      )
     );
   }
-
 
   @override
   // TODO: implement preferredSize
@@ -72,14 +70,16 @@ class _HomeBodyState extends State<HomeBody> {
 
   void onPressedRegister() {
     FocusScope.of(context).unfocus();
-    //Navigator.push();
+    Navigator.push(context, MaterialPageRoute(
+      builder: (context) => RegisterWidget()
+    ));
   }
 
   void onPressedLogin() async {
     FocusScope.of(context).unfocus();
   }
 
-  void toggleLoginButtonEnabled() {
+  void toggleButtonEnabled() {
     if(password.isNotEmpty && password.length >= 8 && loginName.isNotEmpty) {
       isLoginEnabled = true;
     } else {
@@ -94,50 +94,51 @@ class _HomeBodyState extends State<HomeBody> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                child: TextField(
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "用户名/邮箱"
-                  ),
-                  onChanged: (val) {
-                    setState(() {
-                      loginName = val;
-                      toggleLoginButtonEnabled();
-                    });
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top:8.0, bottom: 8.0),
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
+          Expanded (
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                  child: TextField(
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: "密码"
+                      labelText: "用户名/邮箱"
+                    ),
+                    onChanged: (val) {
+                      setState(() {
+                        loginName = val;
+                        toggleButtonEnabled();
+                      });
+                    },
                   ),
-                  onChanged: (val) {
-                    setState(() {
-                      password = val;
-                      toggleLoginButtonEnabled();
-                    });
-                  },
                 ),
-              ),
-              Row(children: [
-                  TextButton(
-                    onPressed: onPressedForgotPassword,
-                    child: Text("忘记密码")
-                  )
-                ]
-              )
-            ],
+                Padding(
+                  padding: const EdgeInsets.only(top:8.0, bottom: 8.0),
+                  child: TextField(
+                    obscureText: true,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "密码"
+                    ),
+                    onChanged: (val) {
+                      setState(() {
+                        password = val;
+                        toggleButtonEnabled();
+                      });
+                    },
+                  ),
+                ),
+                Row(children: [
+                    TextButton(
+                      onPressed: onPressedForgotPassword,
+                      child: Text("忘记密码")
+                    )
+                  ]
+                )
+              ],
+            ),
           ),
-          Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -158,7 +159,6 @@ class _HomeBodyState extends State<HomeBody> {
       )
     );
   }
-
 }
 
 

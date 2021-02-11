@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wireless_order_system/forgotPassword.dart';
 import 'package:wireless_order_system/register.dart';
 
 class Home extends StatefulWidget {
@@ -12,7 +13,6 @@ class FullAppbar extends StatelessWidget implements PreferredSizeWidget {
   final Function onBackPressed;
 
   const FullAppbar({Key key, this.title, this.hasParent, this.onBackPressed}) : super(key: key);
-
 
   @override
   Widget build(BuildContext context) {
@@ -59,31 +59,42 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> {
-  String loginName = "";
-  String password = "";
-  bool isLoginEnabled = false;
-  bool isLoginIn = false;
+  String _loginName = "";
+  String _password = "";
+  bool _isLoginEnabled = false;
 
-  void onPressedForgotPassword() {
+  String _nameErrorMessage; //show error in text field when request failed
+  String _passwordErrorMessage; //show error in text field when request failed
+
+  bool _isLoading = false; //control the loading indicator
+
+  void onPressForgotPassword() {
     FocusScope.of(context).unfocus();
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPassWord()));
   }
 
-  void onPressedRegister() {
+  void onPressRegister() {
     FocusScope.of(context).unfocus();
     Navigator.push(context, MaterialPageRoute(
       builder: (context) => RegisterWidget()
     ));
   }
 
-  void onPressedLogin() async {
+  void onPressLogin() async {
     FocusScope.of(context).unfocus();
+    _isLoading = true;
+    _isLoginEnabled = false;
+    //TODO：网络请求验证用户名和密码
   }
 
   void toggleButtonEnabled() {
-    if(password.isNotEmpty && password.length >= 8 && loginName.isNotEmpty) {
-      isLoginEnabled = true;
+    _nameErrorMessage = null;
+    _passwordErrorMessage = null;
+
+    if(_password.isNotEmpty && _password.length >= 8 && _loginName.isNotEmpty) {
+      _isLoginEnabled = true;
     } else {
-      isLoginEnabled = false;
+      _isLoginEnabled = false;
     }
   }
 
@@ -102,12 +113,13 @@ class _HomeBodyState extends State<HomeBody> {
                   child: TextField(
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "用户名/邮箱"
+                        border: OutlineInputBorder(),
+                        labelText: "用户名/邮箱",
+                        errorText: _nameErrorMessage
                     ),
                     onChanged: (val) {
                       setState(() {
-                        loginName = val;
+                        _loginName = val;
                         toggleButtonEnabled();
                       });
                     },
@@ -119,11 +131,12 @@ class _HomeBodyState extends State<HomeBody> {
                     obscureText: true,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: "密码"
+                        labelText: "密码",
+                        errorText: _passwordErrorMessage
                     ),
                     onChanged: (val) {
                       setState(() {
-                        password = val;
+                        _password = val;
                         toggleButtonEnabled();
                       });
                     },
@@ -131,7 +144,7 @@ class _HomeBodyState extends State<HomeBody> {
                 ),
                 Row(children: [
                     TextButton(
-                      onPressed: onPressedForgotPassword,
+                      onPressed: onPressForgotPassword,
                       child: Text("忘记密码")
                     )
                   ]
@@ -144,12 +157,20 @@ class _HomeBodyState extends State<HomeBody> {
             child: Row(
               children: [
                 TextButton(
-                  onPressed: onPressedRegister,
+                  onPressed: onPressRegister,
                   child: Text("注册")
                 ),
                 Spacer(),
+                if (_isLoading) Padding(
+                  padding: const EdgeInsets.only(right: 24.0),
+                  child: SizedBox(
+                      height: 28.0,
+                      width: 28.0,
+                      child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor))
+                  ),
+                ),
                 ElevatedButton(
-                    onPressed: isLoginEnabled ? onPressedLogin : null,
+                    onPressed: _isLoginEnabled ? onPressLogin : null,
                     child: Text("登录")
                 )
               ],
@@ -161,9 +182,7 @@ class _HomeBodyState extends State<HomeBody> {
   }
 }
 
-
 class HomeState extends State<Home> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -175,5 +194,4 @@ class HomeState extends State<Home> {
       )
     );
   }
-
 }

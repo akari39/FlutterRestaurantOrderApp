@@ -6,7 +6,6 @@ import 'package:wireless_order_system/home.dart';
 class RegisterWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => RegisterWidgetState();
-
 }
 
 class RegisterBody extends StatefulWidget {
@@ -35,10 +34,13 @@ class RegisterBodyState extends State<RegisterBody> {
 
   bool _isRegisterEnabled = false;
 
+  bool _isLoading = false;
+
   TextEditingController _secondPasswordController = TextEditingController();
 
-  void _onPressedRegister() async {
+  void _onPressRegister() async {
     FocusScope.of(context).unfocus();
+    _isLoading = true;
   }
 
   void _toggleButtonEnabled() {
@@ -93,7 +95,6 @@ class RegisterBodyState extends State<RegisterBody> {
   }
 
   void _checkSecondInputPassword() {
-
     if(_firstInputPassword != _secondInputPassword) {
       _secondErrorMessage = "前后两次密码不一致";
     } else {
@@ -117,9 +118,9 @@ class RegisterBodyState extends State<RegisterBody> {
                       child: TextField(
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "用户名/邮箱",
-                          helperText: "用户名不可以包括空格",
+                            border: OutlineInputBorder(),
+                            labelText: "用户名/邮箱",
+                            helperText: "用户名不可以包括空格",
                             errorText: _nameEdited ? _nameErrorMessage : null
                         ),
                         onChanged: (val) {
@@ -183,8 +184,16 @@ class RegisterBodyState extends State<RegisterBody> {
               child: Row(
                 children: [
                   Spacer(),
+                  if (_isLoading) Padding(
+                    padding: const EdgeInsets.only(right: 24.0),
+                    child: SizedBox(
+                        height: 28.0,
+                        width: 28.0,
+                        child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor))
+                    ),
+                  ),
                   ElevatedButton(
-                      onPressed: _isRegisterEnabled ? _onPressedRegister : null,
+                      onPressed: _isRegisterEnabled && !_isLoading ? _onPressRegister : null,
                       child: Text("注册")
                   )
                 ],

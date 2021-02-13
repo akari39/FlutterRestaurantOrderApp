@@ -86,9 +86,7 @@ class _HomeBodyState extends State<HomeBody> {
     _isLoading = true;
     _isLoginEnabled = false;
     //TODO：网络请求验证用户名和密码
-    Navigator.push(context, MaterialPageRoute(
-        builder: (context) => StartWidget()
-    ));
+    Navigator.pushReplacementNamed(context, '/start');
   }
 
   void toggleButtonEnabled() {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wireless_order_system/home.dart';
+import 'package:wireless_order_system/start.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,6 +20,11 @@ class MyApp extends StatelessWidget {
     }
 
     return MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/': (context) => Home(),
+        '/start': (context) => StartWidget()
+      },
       title: 'Startup Name Generator',
       theme: ThemeData(
         brightness: Brightness.light,
@@ -37,8 +43,7 @@ class MyApp extends StatelessWidget {
         textTheme: TextTheme(
           headline6: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color(0xff222222)),
         ),
-      ),
-      home: Home(),
+      )
     );
   }
 }

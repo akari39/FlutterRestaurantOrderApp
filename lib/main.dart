@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
             style: ElevatedButton.styleFrom(primary: Color(0xffE3A20E))
         ),
         textTheme: TextTheme(
-          headline6: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)
+          headline6: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color(0xff222222)),
         ),
       ),
       home: Home(),

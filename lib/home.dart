@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wireless_order_system/forgotPassword.dart';
 import 'package:wireless_order_system/register.dart';
+import 'package:wireless_order_system/start.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -19,11 +20,11 @@ class FullAppbar extends StatelessWidget implements PreferredSizeWidget {
     return SafeArea(child:
       Card(
           color: Colors.white,
-          elevation: 1,
+          elevation: 1.0,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0)
           ),
-          margin: EdgeInsets.only(left: 8.0, right: 8.0),
+          margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
           child:Padding(
             padding: EdgeInsets.all(16.0),
             child:Row(
@@ -85,6 +86,9 @@ class _HomeBodyState extends State<HomeBody> {
     _isLoading = true;
     _isLoginEnabled = false;
     //TODO：网络请求验证用户名和密码
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => StartWidget()
+    ));
   }
 
   void toggleButtonEnabled() {

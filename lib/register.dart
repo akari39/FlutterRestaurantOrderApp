@@ -5,15 +5,15 @@ import 'package:wireless_order_system/home.dart';
 
 class RegisterWidget extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => RegisterWidgetState();
+  State<StatefulWidget> createState() => _RegisterWidgetState();
 }
 
-class RegisterBody extends StatefulWidget {
+class _RegisterBody extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => RegisterBodyState();
+  State<StatefulWidget> createState() => _RegisterBodyState();
 }
 
-class RegisterBodyState extends State<RegisterBody> {
+class _RegisterBodyState extends State<_RegisterBody> {
   String _regex = r"(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$";
 
   bool _nameEdited = false;
@@ -205,19 +205,19 @@ class RegisterBodyState extends State<RegisterBody> {
   }
 }
 
-class RegisterWidgetState extends State<RegisterWidget> {
-  void onBackPressed(){
+class _RegisterWidgetState extends State<RegisterWidget> {
+  void _onBackPressed(){
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: FullAppbar(title: "注册", hasParent: true, onBackPressed: onBackPressed),
+      appBar: FullAppbar(title: "注册", hasParent: true, onBackPressed: _onBackPressed),
       body: GestureDetector(
           onTap: () { FocusScope.of(context).unfocus(); },
           behavior: HitTestBehavior.translucent,
-          child: RegisterBody()
+          child: _RegisterBody()
       )
     );
   }

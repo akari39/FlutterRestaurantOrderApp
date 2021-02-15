@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wireless_order_system/chooseService.dart';
 import 'package:wireless_order_system/model/restaurant.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:marquee_widget/marquee_widget.dart';
@@ -10,8 +11,9 @@ class DetailAppBar extends StatefulWidget implements PreferredSizeWidget{
   final String restaurantSubName;
   final String restaurantImage;
   final String desk;
+  final Function onPressUser;
 
-  const DetailAppBar({Key key, this.restaurantName, this.restaurantSubName, this.restaurantImage, this.desk}) : super(key: key);
+  const DetailAppBar({Key key, this.restaurantName, this.restaurantSubName, this.restaurantImage, this.desk, this.onPressUser}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => DetailAppBarState();
@@ -104,9 +106,10 @@ class DetailAppBarState extends State<DetailAppBar>{
               elevation: 1.0,
               margin: EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(22.0)
+                borderRadius: BorderRadius.circular(24.0)
               ),
               child: IconButton(
+                onPressed: widget.onPressUser != null ? widget.onPressUser : null,
                 padding: EdgeInsets.zero,
                 icon: Icon(Icons.person_outline),
                 color: Theme.of(context).primaryColor
@@ -119,15 +122,16 @@ class DetailAppBarState extends State<DetailAppBar>{
 }
 
 class StartWidget extends StatefulWidget {
-  User user;
+  //final User user;
 
   @override
-  State<StatefulWidget> createState() => StartState();
+  State<StatefulWidget> createState() => _StartState();
 }
 
-class StartState extends State<StartWidget>{
+class _StartState extends State<StartWidget>{
   void onPressScan() {
-
+    //Scan QR code
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ChooseService()) );
   }
 
   @override
@@ -146,7 +150,7 @@ class StartState extends State<StartWidget>{
                 child: Card(
                   color: Theme.of(context).primaryColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(72)
+                    borderRadius: BorderRadius.circular(double.infinity)
                   ),
                   elevation: 5.0,
                   child: SizedBox(

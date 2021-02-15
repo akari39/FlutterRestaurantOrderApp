@@ -5,7 +5,7 @@ import 'package:wireless_order_system/start.dart';
 
 class Home extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => HomeState();
+  State<StatefulWidget> createState() => _HomeState();
 }
 
 class FullAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -54,12 +54,12 @@ class FullAppbar extends StatelessWidget implements PreferredSizeWidget {
 
 }
 
-class HomeBody extends StatefulWidget {
+class _HomeBody extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _HomeBodyState();
 }
 
-class _HomeBodyState extends State<HomeBody> {
+class _HomeBodyState extends State<_HomeBody> {
   String _loginName = "";
   String _password = "";
   bool _isLoginEnabled = false;
@@ -184,7 +184,7 @@ class _HomeBodyState extends State<HomeBody> {
   }
 }
 
-class HomeState extends State<Home> {
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -192,7 +192,7 @@ class HomeState extends State<Home> {
       body: GestureDetector(
         onTap: () { FocusScope.of(context).unfocus(); },
         behavior: HitTestBehavior.translucent,
-        child: HomeBody()
+        child: _HomeBody()
       )
     );
   }

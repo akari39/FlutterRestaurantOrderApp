@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wireless_order_system/forgotPassword.dart';
+import 'package:wireless_order_system/forgot_password.dart';
 import 'package:wireless_order_system/register.dart';
 import 'package:wireless_order_system/start.dart';
 
@@ -35,10 +35,10 @@ class FullAppbar extends StatelessWidget implements PreferredSizeWidget {
                     padding: EdgeInsets.zero,
                     color: Theme.of(context).primaryColor,
                     icon: Icon(Icons.arrow_back),
-                    constraints: BoxConstraints(),
+                    constraints: BoxConstraints()
                   ),
                   hasParent ? Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
+                      padding: const EdgeInsets.only(left: 24.0),
                       child: Text(title,style: Theme.of(context).textTheme.headline6)
                   ) : Text(title,style: Theme.of(context).textTheme.headline6)
                 ]
@@ -117,7 +117,8 @@ class _HomeBodyState extends State<_HomeBody> {
                     decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: "用户名/邮箱",
-                        errorText: _nameErrorMessage
+                        errorText: _nameErrorMessage,
+                        suffixIcon: _nameErrorMessage != null ? Icon(Icons.error_outline) : null
                     ),
                     onChanged: (val) {
                       setState(() {
@@ -134,7 +135,8 @@ class _HomeBodyState extends State<_HomeBody> {
                     decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: "密码",
-                        errorText: _passwordErrorMessage
+                        errorText: _passwordErrorMessage,
+                        suffixIcon: _passwordErrorMessage != null ? Icon(Icons.error_outline) : null
                     ),
                     onChanged: (val) {
                       setState(() {

@@ -6,7 +6,7 @@ class Order {
   String id;
   String createdTime;
   String status;
-  Map<Dish,int> dishes;
+  Map<Dish,Map<String,String>> dishes;
 
   Order.fromJson(Map<String, dynamic> json) {
     this.id = json['id'];

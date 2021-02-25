@@ -11,13 +11,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    if(Theme.of(context).platform == TargetPlatform.android) {
       SystemUiOverlayStyle _style = SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark
       );
       SystemChrome.setSystemUIOverlayStyle(_style);
-    }
 
     return MaterialApp(
       initialRoute: '/',
@@ -30,6 +28,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.light,
         primaryColor: Color(0xffE3A20E),
         accentColor: Color(0xff222222),
+        splashColor: Color(0xffE3A20E).withAlpha(42),
         buttonTheme: ButtonThemeData(
           buttonColor: Theme.of(context).primaryColor,
           textTheme: ButtonTextTheme.primary

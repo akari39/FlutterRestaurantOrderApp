@@ -19,6 +19,7 @@ class _ChooseServiceState extends State<ChooseService> {
   void nextStep() async {
     //call service
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Menu()));
+
   }
 
   @override
@@ -114,7 +115,7 @@ class _ChooseServiceState extends State<ChooseService> {
                   ),
                   Column(
                     children: [
-                      Text("其他服务"),
+                      Text("服务"),
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: SizedBox(
@@ -164,11 +165,17 @@ class _ChooseServiceState extends State<ChooseService> {
                       child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor))
                   ),
                 ),
-                ElevatedButton(
-                    onPressed: () {
-
-                    },
-                    child: Text("下一步")
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _isLoading = true;
+                          nextStep();
+                        });
+                      },
+                      child: Text("下一步")
+                  ),
                 )
               ],
             ),

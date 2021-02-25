@@ -121,7 +121,8 @@ class _RegisterBodyState extends State<_RegisterBody> {
                             border: OutlineInputBorder(),
                             labelText: "用户名/邮箱",
                             helperText: "用户名不可以包括空格",
-                            errorText: _nameEdited ? _nameErrorMessage : null
+                            errorText: _nameEdited ? _nameErrorMessage : null,
+                            suffixIcon: _nameErrorMessage != null ? Icon(Icons.error_outline) : null
                         ),
                         onChanged: (val) {
                           setState(() {
@@ -142,7 +143,8 @@ class _RegisterBodyState extends State<_RegisterBody> {
                             counterText: "$_firstCounter/16",
                             labelText: "密码",
                             helperText: "密码必须大于等于8位小于16位且包含大小写和数字",
-                            errorText: _firstPasswordEdited ? _firstErrorMessage : null
+                            errorText: _firstPasswordEdited ? _firstErrorMessage : null,
+                            suffixIcon: _firstErrorMessage != null ? Icon(Icons.error_outline) : null
                         ),
                         onChanged: (val) {
                           setState(() {
@@ -163,7 +165,8 @@ class _RegisterBodyState extends State<_RegisterBody> {
                           border: OutlineInputBorder(),
                           labelText: "确认密码",
                           helperText: "必须与密码相同",
-                          errorText: _secondPasswordEdited ? _secondErrorMessage : null
+                          errorText: _secondPasswordEdited ? _secondErrorMessage : null,
+                          suffixIcon: _secondErrorMessage!= null ? Icon(Icons.error_outline) : null
                         ),
                         onChanged: (val) {
                           setState(() {

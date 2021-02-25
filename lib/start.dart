@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wireless_order_system/chooseService.dart';
+import 'package:wireless_order_system/choose_service.dart';
 import 'package:wireless_order_system/model/restaurant.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:marquee_widget/marquee_widget.dart';
@@ -24,6 +24,7 @@ class DetailAppBar extends StatefulWidget implements PreferredSizeWidget{
 }
 
 class DetailAppBarState extends State<DetailAppBar>{
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -51,6 +52,8 @@ class DetailAppBarState extends State<DetailAppBar>{
                                 width: 42.0,
                                 child: ClipRRect(
                                   child: CachedNetworkImage(
+                                    fit: BoxFit.fill,
+                                    //httpHeaders: (),
                                     imageUrl: widget.restaurantImage,
                                     placeholder: (context, url) => CircularProgressIndicator(),
                                     errorWidget: (context, url, error) => Icon(Icons.error_outline),
@@ -150,7 +153,7 @@ class _StartState extends State<StartWidget>{
                 child: Card(
                   color: Theme.of(context).primaryColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(double.infinity)
+                    borderRadius: BorderRadius.circular(72.0)
                   ),
                   elevation: 5.0,
                   child: SizedBox(

@@ -30,6 +30,7 @@ dependencies:
   material_design_icons_flutter: 4.0.5855
   cached_network_image: ^2.5.0
   marquee_widget: 1.0.0
+  modal_bottom_sheet: 1.0.0+1
 
 dev_dependencies:
   flutter_test:

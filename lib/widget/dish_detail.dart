@@ -1,16 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import 'model/dish.dart';
+import '../model/dish.dart';
 
 class DishDetail extends StatefulWidget {
   final Dish dish;
-  final Choice choice;
+  final List<Choice> choices;
 
   final Function onAdd;
   final Function onRemove;
 
-  const DishDetail({Key key, this.dish, this.choice, this.onAdd, this.onRemove}) : super(key: key);
+  final Function setStateCallback;
+
+  const DishDetail({Key key, this.dish, this.choices, this.onAdd, this.onRemove, this.setStateCallback}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => DishDetailState();
@@ -18,28 +20,45 @@ class DishDetail extends StatefulWidget {
 
 class DishDetailState extends State<DishDetail>{
   int choiceType = 0;
-  Choice choice;
+  Map<int,Choice> choices = new Map<int,Choice>();
 
   generateTags() {
-    return widget.dish.childTypes.map( (tag) =>
-        ChoiceChip(
-          label: Text(widget.dish.childTypes[choiceType].name),
-          selected: widget.dish.childTypes[choiceType] == tag,
+    List<ChoiceChip> choiceChips = [];
+    widget.dish.childTypes.forEach((element) {
+      choiceChips.add(ChoiceChip(
+          label: Text(element.name),
+          selected: widget.dish.childTypes[choiceType] == element,
           onSelected: (bool) {
-            if(bool)
-              choiceType = widget.dish.childTypes.indexOf(tag);
+            setState(() {
+              if(bool)
+                choiceType = widget.dish.childTypes.indexOf(element);
+            });
           }
-        )
-    ).toList();
+      ));
+    });
+    return choiceChips;
+  }
+
+  void copyChoices(){
+    choices = new Map<int,Choice>();
+    List<Choice> copyChoices = [];
+    if(widget.choices == null) return;
+    else if (choices.containsKey(choiceType)) if(choices[choiceType].count <= 0) choices.remove(choiceType);
+    setState(() {
+      for(int i=0;i<widget.choices.length;i++){
+        copyChoices.add(Choice.clone(widget.choices[i]));
+      }
+
+      for(int i=0;i<copyChoices.length;i++){
+        choices[widget.dish.childTypes.indexOf(copyChoices[i].childDish)] = copyChoices[i];
+      }
+    });
   }
 
   @override void initState() {
     super.initState();
-    choice = widget.choice;
-  }
-
-  void calculatePrice(){
-    choice.price = double.parse((widget.dish.childTypes == null) ? widget.dish.price : widget.dish.childTypes[choiceType].price) * choice.count;
+    copyChoices();
+    widget.setStateCallback((){copyChoices();});
   }
 
   @override
@@ -95,11 +114,11 @@ class DishDetailState extends State<DishDetail>{
                                 text: TextSpan(
                                     children: [
                                       TextSpan(
-                                          text: "¥${widget.dish.cpType == Dish.singleType ? widget.dish.price.split(".")[0] : widget.dish.getPriceString(Dish.intPrice)}.",
+                                          text: "¥${widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType].price.split(".")[0] : widget.dish.getPriceString(Dish.intPrice)}.",
                                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
                                       ),
                                       TextSpan(
-                                          text: "${widget.dish.cpType == Dish.singleType ? widget.dish.price.split(".")[1] : widget.dish.getPriceString(Dish.decimalPrice)}",
+                                          text: "${widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType].price.split(".")[1] : widget.dish.getPriceString(Dish.decimalPrice)}",
                                           style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
                                       )
                                     ]
@@ -123,19 +142,18 @@ class DishDetailState extends State<DishDetail>{
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          if(choice == null)
+                          if(!choices.containsKey(choiceType))
                             SizedBox(
                               height: 32,
                               child: ElevatedButton.icon(
                                 icon: Icon(Icons.add),
                                 style: ElevatedButton.styleFrom(elevation: 0),
                                 onPressed: () {
-                                    setState(() {
-                                      widget.onAdd(widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType] : widget.dish);
-                                      widget.dish.cpType == Dish.multiType ? choice = Choice(childDish: widget.dish.childTypes[choiceType],count: 1) : choice = Choice(dish: widget.dish,count: 1);
-                                      calculatePrice();
-                                    });
-                                  },
+                                  setState(() {
+                                    widget.onAdd(widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType] : widget.dish);
+                                    widget.dish.cpType == Dish.multiType ? choices[choiceType] = Choice(childDish: widget.dish.childTypes[choiceType],count: 1) : choices[choiceType] = Choice(dish: widget.dish,count: 1);
+                                  });
+                                },
                                 label: Text("添加")
                               ),
                             )
@@ -149,25 +167,24 @@ class DishDetailState extends State<DishDetail>{
                                       onPressed: (widget.dish.cpType == Dish.singleType ? int.parse(widget.dish.stock) > 0 : int.parse(widget.dish.childTypes[choiceType].stock) > 0) ?
                                           () {widget.onRemove(widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType] : widget.dish);
                                           setState(() {
-                                            if (choice.count <= 1) choice = null;
-                                            else { choice.count--; calculatePrice(); }
-                                          });;
+                                            choices[choiceType].count--;
+                                            if (choices[choiceType].count <= 0) choices.remove(choiceType);
+                                          });
                                   } : null,
                                       padding: EdgeInsets.zero,
                                       constraints: BoxConstraints()),
                                   Padding(
                                       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                                      child: Text("${choice.count}")
+                                      child: Text("${choices[choiceType].count}")
                                   ),
                                   IconButton(icon: Icon(Icons.add_circle_outline, size: 22, color:
-                                  (widget.dish.cpType == Dish.singleType ? choice.count < int.parse(widget.dish.stock) : choice.count < int.parse(widget.dish.childTypes[choiceType].stock)) ?
+                                  (widget.dish.cpType == Dish.singleType ? choices[choiceType].count < int.parse(widget.dish.stock) : choices[choiceType].count < int.parse(widget.dish.childTypes[choiceType].stock)) ?
                                   Theme.of(context).primaryColor : Colors.black26),
                                       onPressed:
-                                      choice.count < int.parse(widget.dish.stock) ?
+                                      choices[choiceType].count < (widget.dish.cpType == Dish.singleType ? int.parse(widget.dish.stock) : int.parse(widget.dish.childTypes[choiceType].stock)) ?
                                           () {widget.onAdd(widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType] : widget.dish);
                                           setState(() {
-                                            choice.count ++;
-                                            calculatePrice();
+                                            choices[choiceType].count ++;
                                           });
                                   } : null,
                                       padding: EdgeInsets.zero,
@@ -182,7 +199,7 @@ class DishDetailState extends State<DishDetail>{
             )
           ),
           Container(
-            height: 80,
+            height: 100,
           )
         ],
       )

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:wireless_order_system/choose_service.dart';
+import 'package:wireless_order_system/widget/choose_service.dart';
 import 'package:wireless_order_system/model/restaurant.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 
-import 'model/user.dart';
+import '../model/user.dart';
 
 class DetailAppBar extends StatefulWidget implements PreferredSizeWidget{
   final String restaurantName;
@@ -156,17 +156,13 @@ class _StartState extends State<StartWidget>{
                     borderRadius: BorderRadius.circular(72.0)
                   ),
                   elevation: 5.0,
-                  child: SizedBox(
-                    width: 144,
-                    height: 144,
-                    child: IconButton(
-                      icon: Icon(Icons.qr_code_scanner,size: 50,),
-                      color: Colors.white,
-                      onPressed: onPressScan,
+                  child:  InkWell(
+                    borderRadius: BorderRadius.circular(72.0),
+                    child: Icon(Icons.qr_code_scanner,size: 50,color: Colors.white,),
+                    onTap: onPressScan,
                     ),
                   ),
                 ),
-              ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text("扫码点单",style: Theme.of(context).textTheme.headline6),

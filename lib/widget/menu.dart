@@ -1,12 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wireless_order_system/dish_detail.dart';
+import 'package:wireless_order_system/widget/cart_list.dart';
+import 'package:wireless_order_system/widget/dish_detail.dart';
 import 'package:wireless_order_system/model/restaurant.dart';
-import 'package:wireless_order_system/start.dart';
+import 'package:wireless_order_system/widget/start.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-import 'model/dish.dart';
+import '../model/dish.dart';
 
 class _LeftColumn extends StatefulWidget {
   final int selectedColumn;
@@ -71,7 +72,6 @@ class _LeftColumnState extends State<_LeftColumn>{
       );
     });
   }
-
 }
 
 class _RightColumn extends StatefulWidget {
@@ -80,23 +80,40 @@ class _RightColumn extends StatefulWidget {
   final Function onRemove;
   final Function onAdd;
 
-  const _RightColumn({Key key, this.dishList, this.onAdd, this.chosenList, this.onRemove}) : super(key: key);
+  final Function setStateCallback;
+
+  const _RightColumn({Key key, this.dishList, this.onAdd, this.chosenList, this.onRemove, this.setStateCallback}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _RightColumnState();
 }
 
 class _RightColumnState extends State<_RightColumn>{
-  DishDetail dishDetail;
+  ValueNotifier<List<Choice>> choiceValueNotifier;
 
-  pushDetail(Dish dish, Choice choice) {
+  @override void initState(){
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {choiceValueNotifier = new ValueNotifier(widget.chosenList);});
+  }
+
+  @override void didUpdateWidget(Widget oldWidget){
+    super.didUpdateWidget(oldWidget);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {choiceValueNotifier.value = widget.chosenList;});
+  }
+
+  pushDetail(Dish dish, List<Choice> choices) {
     showBarModalBottomSheet(duration: Duration(milliseconds: 250), context: context, builder: (context) {
-      return DishDetail(
-        dish: dish,
-        choice: choice,
-        onAdd: widget.onAdd,
-        onRemove: widget.onRemove,
-      );
+      return ValueListenableBuilder<List<Choice>>(
+          valueListenable: choiceValueNotifier,
+          builder: (context, data, child){
+          return DishDetail(
+            dish: dish,
+            choices: data,
+            onAdd: widget.onAdd,
+            onRemove: widget.onRemove,
+            setStateCallback: widget.setStateCallback,
+          );
+      });
     });
   }
 
@@ -130,7 +147,7 @@ class _RightColumnState extends State<_RightColumn>{
                 padding: const EdgeInsets.only(left: 8.0),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10.0),
-                  onTap: () {pushDetail(widget.dishList[index], Choice.getSingleChoice(widget.chosenList, widget.dishList[index]));},
+                  onTap: () {pushDetail(widget.dishList[index], Choice.getChoices(widget.chosenList, widget.dishList[index]));},
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                     child: Column(
@@ -159,6 +176,7 @@ class _RightColumnState extends State<_RightColumn>{
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(widget.dishList[index].name, style: TextStyle(fontWeight: FontWeight.bold)),
+                                          if(widget.dishList[index].cpType == Dish.singleType)
                                           RichText(
                                               text: TextSpan(
                                                   children: [
@@ -183,15 +201,14 @@ class _RightColumnState extends State<_RightColumn>{
                                           children: [
                                             Container(
                                               constraints: BoxConstraints(
-                                                maxWidth: 105
+                                                maxWidth: 118
                                               ),
                                               child: Text(widget.dishList[index].description, style: Theme.of(context).textTheme.caption)
                                             ),
                                             Padding(
                                               padding: const EdgeInsets.only(top: 4.0),
-                                              child: Text("库存${ widget.dishList[index].stock != null ? widget.dishList[index].stock :
-                                              "最多 " + widget.dishList[index].getChildDishesMaxStock().toString() }",
-                                                  style: TextStyle(color: Colors.black54, fontSize: 12)),
+                                              child: Text("${ widget.dishList[index].stock != null ? "库存" + widget.dishList[index].stock :
+                                              ""}", style: TextStyle(color: Colors.black54, fontSize: 12)),
                                             )
                                           ],
                                         ),
@@ -236,7 +253,7 @@ class _RightColumnState extends State<_RightColumn>{
                                       borderRadius: BorderRadius.circular(10.0),
                                       onTap: widget.dishList[index].stock != null ?
                                         int.parse(widget.dishList[index].stock) > 0 ? () { widget.onAdd(widget.dishList[index]); } : null :
-                                          () { pushDetail(widget.dishList[index],Choice.getSingleChoice(widget.chosenList, widget.dishList[index])); },
+                                          () { pushDetail(widget.dishList[index], Choice.getChoices(widget.chosenList, widget.dishList[index])); },
                                       child: (widget.dishList[index].stock != null ?
                                         int.parse(widget.dishList[index].stock) > 0 : widget.dishList[index].getChildDishesMaxStock() > 0) ?
                                       Padding(
@@ -250,7 +267,9 @@ class _RightColumnState extends State<_RightColumn>{
                                           ),
                                           Padding(
                                             padding: const EdgeInsets.only(left: 8.0),
-                                            child: Text(widget.dishList[index].stock != null ? "添加" : "选择",
+                                            child: Text(widget.dishList[index].cpType == Dish.singleType ? "添加" :
+                                            widget.chosenList.fold(false, (previousValue, element) => widget.dishList[index].childTypes.contains(element.childDish != null ? element.childDish : 0)) ?
+                                            "更改(${widget.chosenList.fold(0, (previousValue, element) => previousValue + (widget.dishList[index].childTypes.contains(element.childDish) ? element.count : 0))})" : "选择",
                                               style: TextStyle(
                                                   fontSize: 17,
                                                   fontWeight: FontWeight.bold,
@@ -369,6 +388,44 @@ class _MenuBodyState extends State<_MenuBody> {
 
   OverlayEntry overlayEntry;
 
+  Function setStateCallback;
+
+  bool forbiddenOpenCartList = false;
+
+  pushCartList() {
+    showBarModalBottomSheet(context: context, builder: (context) {
+      return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+        return CartList(
+            choices: choices,
+            dishes: widget.dishes,
+            onAdd: (Choice choice) {
+              setState((){
+                if (choices.contains(choice)) choice.count++;
+                calculatePrice();
+                overlayEntry.markNeedsBuild();
+                try{
+                  setStateCallback();
+                } catch(e) {}
+              });
+            },
+            onRemove: (Choice choice) {
+              if (choices.contains(choice)) {
+                setState((){
+                  choice.count--;
+                  if (choice.count == 0) choices.remove(choice);
+                  calculatePrice();
+                  overlayEntry.markNeedsBuild();
+                  try{
+                    setStateCallback();
+                  } catch(e) {}
+                });
+              }
+            }
+        );
+      });
+    }).whenComplete(() => forbiddenOpenCartList = false);
+  }
+
   @override void initState() {
     super.initState();
     selectedColumnDishes = widget.dishes.where((element) => element.dishTypes ==
@@ -378,11 +435,18 @@ class _MenuBodyState extends State<_MenuBody> {
       return Positioned(
         left: 0,
         bottom: 0,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _Cart(cartItemsCount: "${choices.length != 0 ? (choices.fold(0, (previousValue, element) => previousValue + element.price)).toInt() : 0}", totalPrice: totalPrice.toStringAsFixed(2),
-              onClickCartIcon: () {},
-              onClickPlaceOrder: () {}
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: _Cart(cartItemsCount: "${choices.length != 0 ? (choices.fold(0, (previousValue, element) => previousValue + element.count)).toInt() : 0}", totalPrice: totalPrice.toStringAsFixed(2),
+                onClickCartIcon: () {
+                  if(!forbiddenOpenCartList) pushCartList();
+                  forbiddenOpenCartList = true;
+                },
+                onClickPlaceOrder: () {
+                  //TODO: Submit orders
+                }
+            ),
           ),
         ),
       );
@@ -513,6 +577,7 @@ class _MenuBodyState extends State<_MenuBody> {
               ),
               Expanded(
                 child: _RightColumn(
+                    setStateCallback: (function){ setStateCallback = function; },
                     dishList: selectedColumnDishes,
                     onAdd: <T extends DishInfo> (T dish) {
                       if (!Choice.isInChosenList(choices, dish)) {
@@ -533,17 +598,11 @@ class _MenuBodyState extends State<_MenuBody> {
                     onRemove: <T extends DishInfo> (T dish)  {
                       if(!Choice.isInChosenList(choices, dish)) return;
                       var choice = Choice.getSingleChoice(choices, dish);
-                      if(choice.count <= 1) {
-                        setState(() {
-                          choices.remove(choice);
-                          overlayEntry.markNeedsBuild();
-                        });
-                      } else {
-                        setState(() {
-                          choice.count --;
-                          overlayEntry.markNeedsBuild();
-                        });
-                      }
+                      setState(() {
+                        choice.count --;
+                        if(choice.count == 0) choices.remove(choice);
+                        overlayEntry.markNeedsBuild();
+                      });
                       setState(() {
                         calculatePrice();
                         overlayEntry.markNeedsBuild();
@@ -599,7 +658,19 @@ class _CartState extends State<_Cart> {
                   padding: const EdgeInsets.only(left: 24.0, right: 24.0),
                   child: Stack(
                     children: [
-                      GestureDetector(child: Icon(Icons.shopping_cart_outlined, color: Colors.black54, size: 42,), onTap: widget.onClickCartIcon),
+                      Card(shape: CircleBorder(),
+                          elevation: 0,
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(21.0),
+                            child: Icon(Icons.shopping_cart_outlined,
+                                color: Colors.black54,
+                                size: 42),
+                              onTap: () {
+                              widget.onClickCartIcon();
+                            }
+                        )
+                      ),
                       Positioned(
                         top: 0.0,
                         right: 0.0,

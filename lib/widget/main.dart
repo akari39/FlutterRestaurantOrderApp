@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wireless_order_system/home.dart';
-import 'package:wireless_order_system/start.dart';
+import 'package:wireless_order_system/widget/home.dart';
+import 'package:wireless_order_system/widget/start.dart';
 
 void main() {
   runApp(MyApp());

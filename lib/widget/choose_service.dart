@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wireless_order_system/model/restaurant.dart';
-import 'package:wireless_order_system/start.dart';
+import 'package:wireless_order_system/widget/start.dart';
 
 import 'menu.dart';
 

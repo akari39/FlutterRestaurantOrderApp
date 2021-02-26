@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wireless_order_system/forgot_password.dart';
-import 'package:wireless_order_system/register.dart';
-import 'package:wireless_order_system/start.dart';
+import 'package:wireless_order_system/widget/forgot_password.dart';
+import 'package:wireless_order_system/widget/register.dart';
+import 'package:wireless_order_system/widget/start.dart';
 
 class Home extends StatefulWidget {
   @override

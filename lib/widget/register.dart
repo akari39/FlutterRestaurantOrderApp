@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:wireless_order_system/home.dart';
+import 'package:wireless_order_system/widget/home.dart';
 
 class RegisterWidget extends StatefulWidget {
   @override

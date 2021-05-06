@@ -97,11 +97,11 @@ class _CartListState extends State<CartList>{
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                      text: "¥${widget.choices[index].price.toString().split(".")[0]}.",
+                                      text: "¥${widget.choices[index].price.toStringAsFixed(2).split(".")[0]}.",
                                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
                                   ),
                                   TextSpan(
-                                      text: "${widget.choices[index].price.toString().split(".")[1]}",
+                                      text: "${widget.choices[index].price.toStringAsFixed(2).split(".")[1]}",
                                       style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
                                   )
                                 ]
@@ -110,7 +110,7 @@ class _CartListState extends State<CartList>{
                             Text("¥${widget.choices[index].dish != null ?
                             widget.choices[index].dish.price : widget.choices[index].childDish.price}",
                                 style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor)),
-                            Text("×${widget.choices[index].count}",style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor))
+                            Text("${widget.choices[index].count}份",style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor))
                           ]
                         ),
                         Padding(

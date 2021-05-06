@@ -1,5 +1,6 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wireless_order_system/widget/cart_list.dart';
 import 'package:wireless_order_system/widget/dish_detail.dart';
@@ -8,6 +9,7 @@ import 'package:wireless_order_system/widget/start.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../model/dish.dart';
+import 'confirm_order.dart';
 
 class _LeftColumn extends StatefulWidget {
   final int selectedColumn;
@@ -18,7 +20,6 @@ class _LeftColumn extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _LeftColumnState();
-
 }
 
 class _LeftColumnState extends State<_LeftColumn>{
@@ -89,31 +90,16 @@ class _RightColumn extends StatefulWidget {
 }
 
 class _RightColumnState extends State<_RightColumn>{
-  ValueNotifier<List<Choice>> choiceValueNotifier;
-
-  @override void initState(){
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {choiceValueNotifier = new ValueNotifier(widget.chosenList);});
-  }
-
-  @override void didUpdateWidget(Widget oldWidget){
-    super.didUpdateWidget(oldWidget);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {choiceValueNotifier.value = widget.chosenList;});
-  }
 
   pushDetail(Dish dish, List<Choice> choices) {
     showBarModalBottomSheet(duration: Duration(milliseconds: 250), context: context, builder: (context) {
-      return ValueListenableBuilder<List<Choice>>(
-          valueListenable: choiceValueNotifier,
-          builder: (context, data, child){
-          return DishDetail(
-            dish: dish,
-            choices: data,
-            onAdd: widget.onAdd,
-            onRemove: widget.onRemove,
-            setStateCallback: widget.setStateCallback,
-          );
-      });
+      return DishDetail(
+        dish: dish,
+        choices: choices,
+        onAdd: widget.onAdd,
+        onRemove: widget.onRemove,
+        setStateCallback: widget.setStateCallback,
+      );
     });
   }
 
@@ -207,7 +193,7 @@ class _RightColumnState extends State<_RightColumn>{
                                             ),
                                             Padding(
                                               padding: const EdgeInsets.only(top: 4.0),
-                                              child: Text("${ widget.dishList[index].stock != null ? "库存" + widget.dishList[index].stock :
+                                              child: Text("${ widget.dishList[index].stock != null ? "库存" + widget.dishList[index].stock.toString() :
                                               ""}", style: TextStyle(color: Colors.black54, fontSize: 12)),
                                             )
                                           ],
@@ -232,8 +218,8 @@ class _RightColumnState extends State<_RightColumn>{
                                   padding: const EdgeInsets.only(top: 5.0),
                                   child: Row(
                                     children: [
-                                      IconButton(icon: Icon(Icons.remove_circle_outline, size: 24, color: int.parse(widget.dishList[index].stock) > 0 ? Theme.of(context).primaryColor : Colors.black26),
-                                          onPressed: int.parse(widget.dishList[index].stock) > 0 ? () {widget.onRemove(widget.dishList[index]);} : null,
+                                      IconButton(icon: Icon(Icons.remove_circle_outline, size: 24, color: widget.dishList[index].stock > 0 ? Theme.of(context).primaryColor : Colors.black26),
+                                          onPressed: widget.dishList[index].stock > 0 ? () {widget.onRemove(widget.dishList[index]);} : null,
                                           padding: EdgeInsets.zero,
                                           constraints: BoxConstraints()),
                                       Padding(
@@ -252,10 +238,10 @@ class _RightColumnState extends State<_RightColumn>{
                                 : InkWell(
                                       borderRadius: BorderRadius.circular(10.0),
                                       onTap: widget.dishList[index].stock != null ?
-                                        int.parse(widget.dishList[index].stock) > 0 ? () { widget.onAdd(widget.dishList[index]); } : null :
+                                        widget.dishList[index].stock > 0 ? () { widget.onAdd(widget.dishList[index]); } : null :
                                           () { pushDetail(widget.dishList[index], Choice.getChoices(widget.chosenList, widget.dishList[index])); },
                                       child: (widget.dishList[index].stock != null ?
-                                        int.parse(widget.dishList[index].stock) > 0 : widget.dishList[index].getChildDishesMaxStock() > 0) ?
+                                        widget.dishList[index].stock > 0 : widget.dishList[index].getChildDishesMaxStock() > 0) ?
                                       Padding(
                                         padding: const EdgeInsets.all(4.0),
                                         child: Row(children: [
@@ -364,6 +350,106 @@ class _CartOverlayState extends State<_CartOverlay>{
   }
 }
 
+class Services extends StatelessWidget{
+  final List<String> availableServices;
+
+  const Services({Key key, this.availableServices}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+      child: SizedBox(
+        height: 58,
+        child: ListView.builder(
+          padding: EdgeInsets.only(left: 16.0, right: 16.0),
+          scrollDirection: Axis.horizontal,
+          itemCount: availableServices.length,
+          itemBuilder: (context, index) {
+            return SizedBox(
+              child: Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)
+                  ),
+                  child: InkWell(
+                    onTap: () {
+
+                    },
+                    borderRadius: BorderRadius.circular(10),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _ServiceIcon(service: availableServices[index]),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: Text(availableServices[index], style: TextStyle(fontWeight: FontWeight.bold)),
+                          )
+                        ],
+                      ),
+                    ),
+                  )
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+}
+
+class SearchBar extends StatelessWidget {
+  final TextEditingController textEditingController;
+  final String searchText;
+  final Function onClickClose;
+  final Function onTapBar;
+  final Function onSubmitted;
+  final Function onChanged;
+
+  const SearchBar({Key key, this.textEditingController, this.onClickClose, this.onTapBar, this.onSubmitted, this.onChanged, this.searchText}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0, top: 8.0),
+      child: Container(
+        height: 50,
+        child: TextField(
+          controller: textEditingController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+              prefixIcon: Icon(Icons.search),
+              hintText: "搜索菜单",
+              contentPadding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+              suffixIcon: textEditingController.text != "" ?
+              InkWell(
+                  child: Icon(Icons.clear), onTap: () {
+                    onClickClose();
+                    },
+                  borderRadius: BorderRadius.circular(30.0)
+              ) : null
+          ),
+          onTap: () {
+            onTapBar();
+          },
+          onSubmitted: (val) {
+            onSubmitted(val);
+          },
+          onChanged: (val) {
+            onChanged(val);
+          },
+        ),
+      ),
+    );
+  }
+
+}
+
 class _MenuBody extends StatefulWidget {
   final List<String> availableServices;
   final Map<String, String> dishTypes;
@@ -404,8 +490,8 @@ class _MenuBodyState extends State<_MenuBody> {
                 calculatePrice();
                 overlayEntry.markNeedsBuild();
                 try{
-                  setStateCallback();
-                } catch(e) {}
+                  setStateCallback(choices);
+                } catch(e) {log(e.toString());}
               });
             },
             onRemove: (Choice choice) {
@@ -416,8 +502,8 @@ class _MenuBodyState extends State<_MenuBody> {
                   calculatePrice();
                   overlayEntry.markNeedsBuild();
                   try{
-                    setStateCallback();
-                  } catch(e) {}
+                    setStateCallback(choices);
+                  } catch(e) {log(e.toString());}
                 });
               }
             }
@@ -432,23 +518,31 @@ class _MenuBodyState extends State<_MenuBody> {
         widget.dishTypes.keys.toList()[selectedColumn])
         .toList();
     overlayEntry = OverlayEntry(builder: (context) {
-      return Positioned(
-        left: 0,
-        bottom: 0,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _Cart(cartItemsCount: "${choices.length != 0 ? (choices.fold(0, (previousValue, element) => previousValue + element.count)).toInt() : 0}", totalPrice: totalPrice.toStringAsFixed(2),
-                onClickCartIcon: () {
-                  if(!forbiddenOpenCartList) pushCartList();
-                  forbiddenOpenCartList = true;
-                },
-                onClickPlaceOrder: () {
-                  //TODO: Submit orders
-                }
-            ),
+      return SafeArea(
+        child: Container(
+          alignment: Alignment.bottomCenter,
+          child: _Cart(cartItemsCount: "${choices.length != 0 ? (choices.fold(0, (previousValue, element) => previousValue + element.count)).toInt() : 0}", totalPrice: totalPrice.toStringAsFixed(2),
+            onClickCartIcon: () {
+              if(!forbiddenOpenCartList) pushCartList();
+              forbiddenOpenCartList = true;
+            },
+            onClickPlaceOrder: choices.isNotEmpty ? () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return ConfirmOrder(
+                  choices: choices,
+                  dishes: widget.dishes,
+                  totalPrice: totalPrice.toStringAsFixed(2),
+                  addBackCart: () {
+                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      Overlay.of(context).insert(overlayEntry);
+                    });
+                  },
+                );
+              }));
+              overlayEntry.remove();
+            } : null,
           ),
-        ),
+        )
       );
     });
   }
@@ -468,93 +562,40 @@ class _MenuBodyState extends State<_MenuBody> {
     totalPrice = 0.0;
     setState(() {
       choices.forEach((element) {
-        element.price = double.parse((element.childDish == null) ? element.dish.price : element.childDish.price) * element.count;
+        element.price = (element.childDish == null) ? element.dish.price : element.childDish.price * element.count;
         totalPrice += element.price;
       });
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         _CartOverlay(overlayEntry: overlayEntry),
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-          child: SizedBox(
-            height: 58,
-            child: ListView.builder(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0),
-              scrollDirection: Axis.horizontal,
-              itemCount: widget.availableServices.length,
-              itemBuilder: (context, index) {
-                return SizedBox(
-                  child: Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)
-                      ),
-                      child: InkWell(
-                        onTap: () {},
-                        borderRadius: BorderRadius.circular(10),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 24.0, right: 24.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              _ServiceIcon(service: widget.availableServices[index]),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 16.0),
-                                child: Text(widget.availableServices[index], style: TextStyle(fontWeight: FontWeight.bold)),
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                    ),
-                  );
-              },
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0, top: 8.0),
-          child: Container(
-            height: 50,
-            child: TextField(
-              controller: _textEditingController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-                  prefixIcon: Icon(Icons.search),
-                  hintText: "搜索菜单",
-                  contentPadding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                  suffixIcon: _searchText != "" ?
-                  InkWell(
-                    child: Icon(Icons.clear), onTap: () {
-                    FocusScope.of(context).unfocus();
-                      setState(() {
-                        _textEditingController.clear();
-                        _searchText = "";
-                        selectedColumn = latestSelectedColumn;
-                        selectedColumnDishes = widget.dishes.where((element) => element.dishTypes == widget.dishTypes.keys.toList()[selectedColumn]).toList();
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(30.0)
-                  ) : null
-              ),
-              onTap: () {
-                latestSelectedColumn = selectedColumn;
-              },
-              onSubmitted: (val) {
-                _search(val);
-              },
-              onChanged: (val) {
-                _search(val);
-              },
-            ),
-          ),
+        Services(availableServices: widget.availableServices),
+        SearchBar(
+          textEditingController: _textEditingController,
+          onClickClose: () {
+            FocusScope.of(context).unfocus();
+            setState(() {
+              _textEditingController.clear();
+              _searchText = "";
+              selectedColumn = latestSelectedColumn;
+              selectedColumnDishes = widget.dishes.where((element) => element.dishTypes == widget.dishTypes.keys.toList()[selectedColumn]).toList();
+            });
+          },
+          onTapBar: () {
+            latestSelectedColumn = selectedColumn;
+          },
+          onSubmitted: (val) {
+            _search(val);
+          },
+          onChanged: (val) {
+            _search(val);
+          }
         ),
         Expanded(
           child: Padding(
@@ -637,85 +678,89 @@ class _Cart extends StatefulWidget {
 class _CartState extends State<_Cart> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          color: Color(0xffF2F2F2),
-          child: Container(height: 44, width: MediaQuery.of(context).size.width-32,),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(right: 24.0, bottom: 10.0),
-          child: Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width-32
-            ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 24.0, right: 24.0),
-                  child: Stack(
-                    children: [
-                      Card(shape: CircleBorder(),
-                          elevation: 0,
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(21.0),
-                            child: Icon(Icons.shopping_cart_outlined,
-                                color: Colors.black54,
-                                size: 42),
-                              onTap: () {
-                              widget.onClickCartIcon();
-                            }
-                        )
-                      ),
-                      Positioned(
-                        top: 0.0,
-                        right: 0.0,
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: 20,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            shape: BoxShape.circle
-                          ),
-                          child: Text(widget.cartItemsCount, style:
-                          TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 12.0, color: Theme.of(context).accentColor, decoration: TextDecoration.none
-                          ))
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: "¥${widget.totalPrice.split(".")[0]}.",
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
-                        ),
-                        TextSpan(
-                            text: "${widget.totalPrice.split(".")[1]}",
-                            style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
-                        )
-                      ]
-                    )
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: widget.onClickPlaceOrder,
-                  child: Text("下单")
-                )
-              ],
-            ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            color: Color(0xffF2F2F2),
+            child: Container(height: 44, width: MediaQuery.of(context).size.width-32),
           ),
-        )
-      ],
+          Container(
+            width: MediaQuery.of(context).size.width-32,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    child: Stack(
+                      children: [
+                        Card(shape: CircleBorder(),
+                            elevation: 0,
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(21.0),
+                              child: Icon(Icons.shopping_cart_outlined,
+                                  color: Colors.black54,
+                                  size: 42),
+                                onTap: () {
+                                widget.onClickCartIcon();
+                              }
+                          )
+                        ),
+                        Positioned(
+                          top: 0.0,
+                          right: 0.0,
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              shape: BoxShape.circle
+                            ),
+                            child: Text(widget.cartItemsCount, style:
+                            TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 12.0, color: Theme.of(context).accentColor, decoration: TextDecoration.none
+                            ))
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                              text: "¥${widget.totalPrice.split(".")[0]}.",
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
+                          ),
+                          TextSpan(
+                              text: "${widget.totalPrice.split(".")[1]}",
+                              style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
+                          )
+                        ]
+                      )
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: ElevatedButton(
+                      onPressed: widget.onClickPlaceOrder,
+                      child: Text("下单")
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

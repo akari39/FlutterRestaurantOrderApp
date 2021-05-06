@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import '../main.dart';
 import '../model/dish.dart';
 
 class DishDetail extends StatefulWidget {
@@ -20,7 +22,7 @@ class DishDetail extends StatefulWidget {
 
 class DishDetailState extends State<DishDetail>{
   int choiceType = 0;
-  Map<int,Choice> choices = new Map<int,Choice>();
+  List<Choice> choices = [];
 
   generateTags() {
     List<ChoiceChip> choiceChips = [];
@@ -39,26 +41,44 @@ class DishDetailState extends State<DishDetail>{
     return choiceChips;
   }
 
-  void copyChoices(){
-    choices = new Map<int,Choice>();
-    List<Choice> copyChoices = [];
-    if(widget.choices == null) return;
-    else if (choices.containsKey(choiceType)) if(choices[choiceType].count <= 0) choices.remove(choiceType);
-    setState(() {
-      for(int i=0;i<widget.choices.length;i++){
-        copyChoices.add(Choice.clone(widget.choices[i]));
-      }
-
-      for(int i=0;i<copyChoices.length;i++){
-        choices[widget.dish.childTypes.indexOf(copyChoices[i].childDish)] = copyChoices[i];
-      }
-    });
-  }
 
   @override void initState() {
     super.initState();
-    copyChoices();
-    widget.setStateCallback((){copyChoices();});
+    widget.choices.forEach((element){
+      this.choices.add(Choice.clone(element));
+    });
+    widget.setStateCallback((List<Choice> choices){
+      setState(() {
+        this.choices = [];
+      });
+      choices.forEach((element){
+        setState(() {
+          this.choices.add(Choice.clone(element));
+        });
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    SystemChrome.setSystemUIOverlayStyle(MyApp.style);
+  }
+
+  Choice get _myChoice{
+    Choice myChoice;
+    choices.forEach((element) {
+      if(element.childDish != null) {
+        if (element.childDish == widget.dish.childTypes[choiceType]) {
+          myChoice = element;
+        }
+      } else {
+        if(element.dish != null)
+          if(element.dish == widget.dish)
+            myChoice = element;
+      }
+    });
+    return myChoice;
   }
 
   @override
@@ -114,11 +134,11 @@ class DishDetailState extends State<DishDetail>{
                                 text: TextSpan(
                                     children: [
                                       TextSpan(
-                                          text: "¥${widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType].price.split(".")[0] : widget.dish.getPriceString(Dish.intPrice)}.",
+                                          text: "¥${widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType].price.toString().split(".")[0] : widget.dish.getPriceString(Dish.intPrice)}.",
                                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
                                       ),
                                       TextSpan(
-                                          text: "${widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType].price.split(".")[1] : widget.dish.getPriceString(Dish.decimalPrice)}",
+                                          text: "${widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType].price.toString().split(".")[1] : widget.dish.getPriceString(Dish.decimalPrice)}",
                                           style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
                                       )
                                     ]
@@ -142,7 +162,7 @@ class DishDetailState extends State<DishDetail>{
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          if(!choices.containsKey(choiceType))
+                          if(_myChoice == null)
                             SizedBox(
                               height: 32,
                               child: ElevatedButton.icon(
@@ -151,7 +171,7 @@ class DishDetailState extends State<DishDetail>{
                                 onPressed: () {
                                   setState(() {
                                     widget.onAdd(widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType] : widget.dish);
-                                    widget.dish.cpType == Dish.multiType ? choices[choiceType] = Choice(childDish: widget.dish.childTypes[choiceType],count: 1) : choices[choiceType] = Choice(dish: widget.dish,count: 1);
+                                    widget.dish.cpType == Dish.multiType ? choices.add(Choice(childDish: widget.dish.childTypes[choiceType],count: 1)) : choices.add(Choice(dish: widget.dish,count: 1));
                                   });
                                 },
                                 label: Text("添加")
@@ -162,29 +182,30 @@ class DishDetailState extends State<DishDetail>{
                             child: Row(
                                 children: [
                                   IconButton(icon: Icon(Icons.remove_circle_outline, size: 22, color:
-                                  (widget.dish.cpType == Dish.singleType ? int.parse(widget.dish.stock) > 0 : int.parse(widget.dish.childTypes[choiceType].stock) > 0) ?
+                                  (widget.dish.cpType == Dish.singleType ? widget.dish.stock > 0 : widget.dish.childTypes[choiceType].stock > 0) ?
                                   Theme.of(context).primaryColor : Colors.black26),
-                                      onPressed: (widget.dish.cpType == Dish.singleType ? int.parse(widget.dish.stock) > 0 : int.parse(widget.dish.childTypes[choiceType].stock) > 0) ?
+                                      onPressed: (widget.dish.cpType == Dish.singleType ? widget.dish.stock > 0 : widget.dish.childTypes[choiceType].stock > 0) ?
                                           () {widget.onRemove(widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType] : widget.dish);
                                           setState(() {
-                                            choices[choiceType].count--;
-                                            if (choices[choiceType].count <= 0) choices.remove(choiceType);
+                                            _myChoice.count --;
+                                            choices.removeWhere((element) => element.count <= 0);
                                           });
                                   } : null,
                                       padding: EdgeInsets.zero,
                                       constraints: BoxConstraints()),
                                   Padding(
                                       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                                      child: Text("${choices[choiceType].count}")
+                                      child: Text("${_myChoice.count}")
                                   ),
                                   IconButton(icon: Icon(Icons.add_circle_outline, size: 22, color:
-                                  (widget.dish.cpType == Dish.singleType ? choices[choiceType].count < int.parse(widget.dish.stock) : choices[choiceType].count < int.parse(widget.dish.childTypes[choiceType].stock)) ?
+                                  (widget.dish.cpType == Dish.singleType ? _myChoice.count < widget.dish.stock : _myChoice.count < widget.dish.childTypes[choiceType].stock) ?
                                   Theme.of(context).primaryColor : Colors.black26),
                                       onPressed:
-                                      choices[choiceType].count < (widget.dish.cpType == Dish.singleType ? int.parse(widget.dish.stock) : int.parse(widget.dish.childTypes[choiceType].stock)) ?
-                                          () {widget.onAdd(widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType] : widget.dish);
-                                          setState(() {
-                                            choices[choiceType].count ++;
+                                      _myChoice.count < (widget.dish.cpType == Dish.singleType ? widget.dish.stock : widget.dish.childTypes[choiceType].stock) ?
+                                          () {
+                                          widget.onAdd(widget.dish.cpType == Dish.multiType ? widget.dish.childTypes[choiceType] : widget.dish);
+                                          setState((){
+                                            _myChoice.count++;
                                           });
                                   } : null,
                                       padding: EdgeInsets.zero,

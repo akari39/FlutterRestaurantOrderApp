@@ -9,13 +9,18 @@ void main() {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
+  static SystemUiOverlayStyle style = SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark
+  );
+
   @override
   Widget build(BuildContext context) {
-      SystemUiOverlayStyle _style = SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark
-      );
-      SystemChrome.setSystemUIOverlayStyle(_style);
+
+    SystemChrome.setSystemUIOverlayStyle(MyApp.style);
 
     return MaterialApp(
       initialRoute: '/',

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wireless_order_system/widget/forgot_password.dart';
 import 'package:wireless_order_system/widget/register.dart';
 import 'package:wireless_order_system/widget/start.dart';
 
@@ -69,11 +68,6 @@ class _HomeBodyState extends State<_HomeBody> {
 
   bool _isLoading = false; //control the loading indicator
 
-  void onPressForgotPassword() {
-    FocusScope.of(context).unfocus();
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPassWord()));
-  }
-
   void onPressRegister() {
     FocusScope.of(context).unfocus();
     Navigator.push(context, MaterialPageRoute(
@@ -116,9 +110,9 @@ class _HomeBodyState extends State<_HomeBody> {
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: "用户名/邮箱",
+                        labelText: "用户名",
                         errorText: _nameErrorMessage,
-                        suffixIcon: _nameErrorMessage != null ? Icon(Icons.error_outline) : null
+                        suffixIcon: _nameErrorMessage != null ? Icon(Icons.error_outline, color: Colors.red) : null
                     ),
                     onChanged: (val) {
                       setState(() {
@@ -136,7 +130,7 @@ class _HomeBodyState extends State<_HomeBody> {
                         border: OutlineInputBorder(),
                         labelText: "密码",
                         errorText: _passwordErrorMessage,
-                        suffixIcon: _passwordErrorMessage != null ? Icon(Icons.error_outline) : null
+                        suffixIcon: _passwordErrorMessage != null ? Icon(Icons.error_outline, color: Colors.red) : null
                     ),
                     onChanged: (val) {
                       setState(() {
@@ -145,13 +139,6 @@ class _HomeBodyState extends State<_HomeBody> {
                       });
                     },
                   ),
-                ),
-                Row(children: [
-                    TextButton(
-                      onPressed: onPressForgotPassword,
-                      child: Text("忘记密码")
-                    )
-                  ]
                 )
               ],
             ),

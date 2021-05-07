@@ -18,8 +18,7 @@ class _ChooseServiceState extends State<ChooseService> {
 
   void nextStep() async {
     //call service
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Menu()));
-
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Menu()));
   }
 
   @override
@@ -184,5 +183,4 @@ class _ChooseServiceState extends State<ChooseService> {
       )
     );
   }
-
 }

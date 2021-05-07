@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:marquee/marquee.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:wireless_order_system/widget/choose_service.dart';
-import 'package:wireless_order_system/model/restaurant.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:marquee_widget/marquee_widget.dart';
+import 'package:wireless_order_system/widget/scan_qrcode.dart';
 
-import '../model/user.dart';
+import 'my.dart';
 
 class DetailAppBar extends StatefulWidget implements PreferredSizeWidget{
   final String? restaurantName;
@@ -67,13 +68,15 @@ class DetailAppBarState extends State<DetailAppBar>{
                             children: [
                               SizedBox(
                                 width: 80.0,
+                                height: 22.0,
                                 child: Marquee(
-                                    child: Text(widget.restaurantName!,
-                                        style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17
-                                      )
-                                    )
+                                  text: widget.restaurantName!,
+                                  velocity: 20,
+                                  blankSpace: 20,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17
+                                  )
                                 ),
                               ),
                               if(widget.restaurantSubName != null)
@@ -112,7 +115,12 @@ class DetailAppBarState extends State<DetailAppBar>{
                 borderRadius: BorderRadius.circular(24.0)
               ),
               child: IconButton(
-                onPressed: widget.onPressUser != null ? widget.onPressUser as void Function()? : null,
+                onPressed: (){
+                  if(widget.onPressUser != null) widget.onPressUser!();
+                  else{
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyPage(myUserName: "测试名")));
+                  }
+                },
                 padding: EdgeInsets.zero,
                 icon: Icon(Icons.person_outline),
                 color: Theme.of(context).primaryColor
@@ -126,15 +134,28 @@ class DetailAppBarState extends State<DetailAppBar>{
 
 class StartWidget extends StatefulWidget {
   //final User user;
+  final bool isRescan;
+
+  const StartWidget({Key? key, this.isRescan=false}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _StartState();
 }
 
 class _StartState extends State<StartWidget>{
-  void onPressScan() {
-    //Scan QR code
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ChooseService()) );
+  void onPressScan() async{
+    var status = await Permission.camera.request();
+    if(status.isGranted) {
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => ScanPage())
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if(widget.isRescan) onPressScan();
   }
 
   @override

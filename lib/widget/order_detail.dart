@@ -21,36 +21,63 @@ class OrderDetail extends StatefulWidget {
 class _OrderDetailState extends State<OrderDetail>{
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: DetailAppBar(
-        restaurantName: Restaurant.sample()!.name,
-        restaurantSubName: Restaurant.sample()!.subName,
-        restaurantImage: Restaurant.sample()!.restaurantImage,
-        desk: "A10"
-      ),
-      body: Column(
-        children: [
-          Services(
-            availableServices: Restaurant.sample()!.services
-          ),
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Container(
-                alignment: Alignment.center,
-                child: Text("下单成功！", style: Theme.of(context).textTheme.headline6)
+    return WillPopScope(
+      onWillPop: () async { return true; },
+      child: Scaffold(
+        appBar: DetailAppBar(
+          restaurantName: Restaurant.sample()!.name,
+          restaurantSubName: Restaurant.sample()!.subName,
+          restaurantImage: Restaurant.sample()!.restaurantImage,
+          desk: "A10"
+        ),
+        body: Column(
+          children: [
+            Services(
+              availableServices: Restaurant.sample()!.services
             ),
-          ),
-          Expanded(
-              child: SingleChildScrollView(
-                child: OrderList(
-                  choices: widget.choices,
-                  dishes: widget.dishes,
-                  totalPrice: widget.totalPrice
-                ),
-              )
-          )
-        ],
-      )
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Container(
+                  alignment: Alignment.center,
+                  child: Text("下单成功！", style: Theme.of(context).textTheme.headline6)
+              ),
+            ),
+            Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      OrderList(
+                        choices: widget.choices,
+                        dishes: widget.dishes,
+                        totalPrice: widget.totalPrice
+                      ),
+                      ElevatedButton.icon(
+                          onPressed: (){
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return Menu();
+                                }
+                              )
+                            );
+                          },
+                          icon: Icon(Icons.menu_book_outlined),
+                          label: Text("返回菜单")
+                      ),
+                      ElevatedButton.icon(
+                          onPressed: (){
+                            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => StartWidget(isRescan: true)), (route) => false);
+                          },
+                          icon: Icon(Icons.qr_code_outlined),
+                          label: Text("重新扫码")
+                      )
+                    ],
+                  ),
+                )
+            )
+          ],
+        )
+      ),
     );
   }
 }

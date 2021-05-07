@@ -29,12 +29,15 @@ dependencies:
   cupertino_icons: ^1.0.3
   material_design_icons_flutter: ^5.0.5955-rc.1
   cached_network_image: ^3.0.0
-  marquee_widget: ^1.0.0
+  marquee: ^2.1.0
   json_annotation: ^4.0.1
   modal_bottom_sheet: ^2.0.0
   shared_preferences: ^0.5.4+1
   http: ^0.13.1
   sprintf: ^4.0.0
+  scan: ^1.4.3
+  images_picker: ^1.2.4
+  permission_handler: ^7.1.0
 
 dev_dependencies:
   flutter_test:

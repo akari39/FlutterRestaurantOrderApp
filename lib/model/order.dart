@@ -1,16 +1,19 @@
 import 'dart:core';
 
+import 'package:json_annotation/json_annotation.dart';
+
 import 'dish.dart';
+
+part 'order.g.dart';
 
 class Order {
   String? id;
   String? createdTime;
   String? desk;
   List<RequestChoice>? requestChoices;
-
-
 }
 
+@JsonSerializable()
 class RequestChoice {
   final String? name;
   final String? childType;

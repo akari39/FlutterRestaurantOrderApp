@@ -4,7 +4,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wireless_order_system/model/dish.dart';
 import 'package:wireless_order_system/model/restaurant.dart';
+import 'package:wireless_order_system/model/wos_network.dart';
 import 'package:wireless_order_system/widget/home.dart';
+import 'package:wireless_order_system/widget/order_detail.dart';
 
 import 'menu.dart';
 
@@ -136,7 +138,7 @@ class OrderList extends StatelessWidget {
   }
 }
 
-class ConfirmOrder extends StatelessWidget {
+class ConfirmOrder extends StatefulWidget {
   final List<Choice>? choices;
   final List<Dish>? dishes;
   final String? totalPrice;
@@ -146,9 +148,30 @@ class ConfirmOrder extends StatelessWidget {
   ConfirmOrder({this.choices, this.dishes, this.totalPrice, this.addBackCart});
 
   @override
+  State<StatefulWidget> createState() => _ConfirmOrderState();
+}
+
+class _ConfirmOrderState extends State<ConfirmOrder> {
+
+  submitOrder() async {
+
+  }
+
+  bool inConfirmPage = true;
+
+  @override
+  void initState() {
+    super.initState();
+    inConfirmPage = true;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {addBackCart!(); return true;},
+      onWillPop: () async {
+          if(inConfirmPage) { widget.addBackCart!(); return true;}
+          else return false;
+        },
       child: Scaffold(
         extendBody: true,
         appBar: FullAppbar(
@@ -156,7 +179,7 @@ class ConfirmOrder extends StatelessWidget {
           hasParent: true,
           onBackPressed: () {
             Navigator.of(context).pop();
-            addBackCart!();
+            widget.addBackCart!();
           },
         ),
         body: Column(
@@ -176,9 +199,9 @@ class ConfirmOrder extends StatelessWidget {
                       ),
                     ),
                     OrderList(
-                      choices: choices,
-                      dishes: dishes,
-                      totalPrice: totalPrice,
+                      choices: widget.choices,
+                      dishes: widget.dishes,
+                      totalPrice: widget.totalPrice,
                     ),
                     Container(height: 80)
                   ],
@@ -219,11 +242,11 @@ class ConfirmOrder extends StatelessWidget {
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: "¥${totalPrice!.split(".")[0]}.",
+                                    text: "¥${widget.totalPrice!.split(".")[0]}.",
                                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
                                   ),
                                   TextSpan(
-                                    text: "${totalPrice!.split(".")[1]}",
+                                    text: "${widget.totalPrice!.split(".")[1]}",
                                     style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
                                   )
                                 ]
@@ -231,10 +254,24 @@ class ConfirmOrder extends StatelessWidget {
                             ),
                           ),
                           ElevatedButton(
-                            onPressed: () {
-
+                            onPressed: () async {
+                              await submitOrder();
+                              inConfirmPage = false;
+                              Navigator.pushAndRemoveUntil(
+                                  this.context,
+                                  MaterialPageRoute(
+                                  builder: (context) {
+                                    return OrderDetail(
+                                        totalPrice: widget.totalPrice,
+                                        choices: widget.choices,
+                                        dishes: widget.dishes
+                                      );
+                                    }
+                                  ),
+                                  (check) => false
+                              );
                             },
-                            child: Text("确认")
+                            child: Text("提交")
                           )
                         ],
                       ),

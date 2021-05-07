@@ -527,7 +527,7 @@ class _MenuBodyState extends State<_MenuBody> {
               forbiddenOpenCartList = true;
             },
             onClickPlaceOrder: choices.isNotEmpty ? () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
                 return ConfirmOrder(
                   choices: choices,
                   dishes: widget.dishes,
@@ -572,91 +572,94 @@ class _MenuBodyState extends State<_MenuBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _CartOverlay(overlayEntry: overlayEntry),
-        Services(availableServices: widget.availableServices),
-        SearchBar(
-          textEditingController: _textEditingController,
-          onClickClose: () {
-            FocusScope.of(context).unfocus();
-            setState(() {
-              _textEditingController.clear();
-              _searchText = "";
-              selectedColumn = latestSelectedColumn;
-              selectedColumnDishes = widget.dishes!.where((element) => element.dishTypes == widget.dishTypes!.keys.toList()[selectedColumn!]).toList();
-            });
-          },
-          onTapBar: () {
-            latestSelectedColumn = selectedColumn;
-          },
-          onSubmitted: (val) {
-            _search(val);
-          },
-          onChanged: (val) {
-            _search(val);
-          }
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-            child: Row(
-              children: [
-              Container(
-                constraints: BoxConstraints(
-                  maxWidth: 80
-                ),
-                child: _LeftColumn(dishTypes: widget.dishTypes,
-                  selectedColumn: selectedColumn,
-                  onClickColumnItem: (index) {
-                    setState(() {
-                      selectedColumn = index;
-                      selectedColumnDishes = widget.dishes!.where((element) => element.dishTypes == widget.dishTypes!.keys.toList()[selectedColumn!]).toList();
-                    });
-                  },
-                ),
-              ),
-              Expanded(
-                child: _RightColumn(
-                    setStateCallback: (function){ setStateCallback = function; },
-                    dishList: selectedColumnDishes,
-                    onAdd: <T extends DishInfo> (T dish) {
-                      if (!Choice.isInChosenList(choices, dish)) {
-                        setState(() {
-                          choices.add(dish is Dish ? Choice(dish: dish, count: 1) : Choice(childDish: dish as ChildDish, count: 1));
-                          overlayEntry!.markNeedsBuild();
-                        });
-                      } else {
-                        setState(() {
-                          Choice.getSingleChoice(choices, dish)!.count = Choice.getSingleChoice(choices, dish)!.count! + 1;
-                          overlayEntry!.markNeedsBuild();
-                        });
-                      }
-                      setState(() {
-                        calculatePrice();
-                      });
-                    },
-                    onRemove: <T extends DishInfo> (T dish)  {
-                      if(!Choice.isInChosenList(choices, dish)) return;
-                      var choice = Choice.getSingleChoice(choices, dish);
-                      setState(() {
-                        choice?.count = choice.count! + 1;
-                        if(choice?.count == 0) choices.remove(choice);
-                        overlayEntry!.markNeedsBuild();
-                      });
-                      setState(() {
-                        calculatePrice();
-                        overlayEntry!.markNeedsBuild();
-                      });
-                    },
-                    chosenList: choices
-                  ),
-                )
-              ],
-            ),
+    return WillPopScope(
+      onWillPop: () async {overlayEntry?.remove(); return true;},
+      child: Column(
+        children: [
+          _CartOverlay(overlayEntry: overlayEntry),
+          Services(availableServices: widget.availableServices),
+          SearchBar(
+            textEditingController: _textEditingController,
+            onClickClose: () {
+              FocusScope.of(context).unfocus();
+              setState(() {
+                _textEditingController.clear();
+                _searchText = "";
+                selectedColumn = latestSelectedColumn;
+                selectedColumnDishes = widget.dishes!.where((element) => element.dishTypes == widget.dishTypes!.keys.toList()[selectedColumn!]).toList();
+              });
+            },
+            onTapBar: () {
+              latestSelectedColumn = selectedColumn;
+            },
+            onSubmitted: (val) {
+              _search(val);
+            },
+            onChanged: (val) {
+              _search(val);
+            }
           ),
-        )
-      ],
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+              child: Row(
+                children: [
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: 80
+                  ),
+                  child: _LeftColumn(dishTypes: widget.dishTypes,
+                    selectedColumn: selectedColumn,
+                    onClickColumnItem: (index) {
+                      setState(() {
+                        selectedColumn = index;
+                        selectedColumnDishes = widget.dishes!.where((element) => element.dishTypes == widget.dishTypes!.keys.toList()[selectedColumn!]).toList();
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: _RightColumn(
+                      setStateCallback: (function){ setStateCallback = function; },
+                      dishList: selectedColumnDishes,
+                      onAdd: <T extends DishInfo> (T dish) {
+                        if (!Choice.isInChosenList(choices, dish)) {
+                          setState(() {
+                            choices.add(dish is Dish ? Choice(dish: dish, count: 1) : Choice(childDish: dish as ChildDish, count: 1));
+                            overlayEntry!.markNeedsBuild();
+                          });
+                        } else {
+                          setState(() {
+                            Choice.getSingleChoice(choices, dish)!.count = Choice.getSingleChoice(choices, dish)!.count! + 1;
+                            overlayEntry!.markNeedsBuild();
+                          });
+                        }
+                        setState(() {
+                          calculatePrice();
+                        });
+                      },
+                      onRemove: <T extends DishInfo> (T dish)  {
+                        if(!Choice.isInChosenList(choices, dish)) return;
+                        var choice = Choice.getSingleChoice(choices, dish);
+                        setState(() {
+                          choice?.count = choice.count! - 1;
+                          if(choice?.count == 0) choices.remove(choice);
+                          overlayEntry!.markNeedsBuild();
+                        });
+                        setState(() {
+                          calculatePrice();
+                          overlayEntry!.markNeedsBuild();
+                        });
+                      },
+                      chosenList: choices
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

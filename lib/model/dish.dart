@@ -175,7 +175,7 @@ class Choice {
   int? count = 0;
   double? price;
 
-  get dishOfChoice => dish != null ? dish : childDish;
+  DishInfo get dishOfChoice => dish != null ? dish! : childDish!;
 
   Choice({this.dish, this.childDish, this.count, this.price});
 
@@ -205,4 +205,6 @@ class Choice {
     if(dish != null) return "{${dish!.name},$count,$price}";
     else return "{${childDish!.name},$count,$price}";
   }
+
+
 }

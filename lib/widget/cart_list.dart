@@ -118,8 +118,8 @@ class _CartListState extends State<CartList>{
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              IconButton(icon: Icon(Icons.remove_circle_outline, size: 24, color: int.parse(widget.choices![index].dishOfChoice.stock) > 0 ? Theme.of(context).primaryColor : Colors.black26),
-                                onPressed: int.parse(widget.choices![index].dishOfChoice.stock) > 0 ?
+                              IconButton(icon: Icon(Icons.remove_circle_outline, size: 24, color: widget.choices![index].dishOfChoice.stock! > 0 ? Theme.of(context).primaryColor : Colors.black26),
+                                onPressed: widget.choices![index].dishOfChoice.stock! > 0 ?
                                     () {widget.onRemove!(widget.choices![index]);} : null,
                                 padding: EdgeInsets.zero,
                                 constraints: BoxConstraints()),
@@ -127,9 +127,9 @@ class _CartListState extends State<CartList>{
                                 padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                                 child: Text("${widget.choices![index].count}", style: TextStyle(fontSize: 17))
                               ),
-                              IconButton(icon: Icon(Icons.add_circle_outline, size: 24, color: int.parse(widget.choices![index].dishOfChoice.stock) > widget.choices![index].count! ? Theme.of(context).primaryColor : Colors.black26),
+                              IconButton(icon: Icon(Icons.add_circle_outline, size: 24, color: widget.choices![index].dishOfChoice.stock! > widget.choices![index].count! ? Theme.of(context).primaryColor : Colors.black26),
                                 onPressed:
-                                int.parse(widget.choices![index].dishOfChoice.stock) > widget.choices![index].count! ?
+                                widget.choices![index].dishOfChoice.stock! > widget.choices![index].count! ?
                                     () { widget.onAdd!(widget.choices![index]); } : null,
                                 padding: EdgeInsets.zero,
                                 constraints: BoxConstraints()),

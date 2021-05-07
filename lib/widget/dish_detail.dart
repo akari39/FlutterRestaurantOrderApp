@@ -69,10 +69,12 @@ class DishDetailState extends State<DishDetail>{
     Choice? myChoice;
     choices.forEach((element) {
       if(element.childDish != null) {
+        if(widget.dish!.cpType == Dish.multiType)
         if (element.childDish == widget.dish!.childTypes![choiceType]) {
           myChoice = element;
         }
       } else {
+        if(widget.dish!.cpType == Dish.singleType)
         if(element.dish != null)
           if(element.dish == widget.dish)
             myChoice = element;

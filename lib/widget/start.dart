@@ -7,13 +7,13 @@ import 'package:marquee_widget/marquee_widget.dart';
 import '../model/user.dart';
 
 class DetailAppBar extends StatefulWidget implements PreferredSizeWidget{
-  final String restaurantName;
-  final String restaurantSubName;
-  final String restaurantImage;
-  final String desk;
-  final Function onPressUser;
+  final String? restaurantName;
+  final String? restaurantSubName;
+  final String? restaurantImage;
+  final String? desk;
+  final Function? onPressUser;
 
-  const DetailAppBar({Key key, this.restaurantName, this.restaurantSubName, this.restaurantImage, this.desk, this.onPressUser}) : super(key: key);
+  const DetailAppBar({Key? key, this.restaurantName, this.restaurantSubName, this.restaurantImage, this.desk, this.onPressUser}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => DetailAppBarState();
@@ -54,7 +54,7 @@ class DetailAppBarState extends State<DetailAppBar>{
                                   child: CachedNetworkImage(
                                     fit: BoxFit.fill,
                                     //httpHeaders: (),
-                                    imageUrl: widget.restaurantImage,
+                                    imageUrl: widget.restaurantImage!,
                                     placeholder: (context, url) => CircularProgressIndicator(),
                                     errorWidget: (context, url, error) => Icon(Icons.error_outline),
                                   ),
@@ -68,7 +68,7 @@ class DetailAppBarState extends State<DetailAppBar>{
                               SizedBox(
                                 width: 80.0,
                                 child: Marquee(
-                                    child: Text(widget.restaurantName,
+                                    child: Text(widget.restaurantName!,
                                         style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 17
@@ -77,7 +77,7 @@ class DetailAppBarState extends State<DetailAppBar>{
                                 ),
                               ),
                               if(widget.restaurantSubName != null)
-                                Text(widget.restaurantSubName,
+                                Text(widget.restaurantSubName!,
                                   style: Theme.of(context).textTheme.caption
                                 )
                             ],
@@ -92,7 +92,7 @@ class DetailAppBarState extends State<DetailAppBar>{
                         ),
                       ),
                       if(widget.desk != null)
-                        Text(widget.desk,
+                        Text(widget.desk!,
                           style: TextStyle(
                               color: Theme.of(context).accentColor,
                               fontSize: 28.0,
@@ -112,7 +112,7 @@ class DetailAppBarState extends State<DetailAppBar>{
                 borderRadius: BorderRadius.circular(24.0)
               ),
               child: IconButton(
-                onPressed: widget.onPressUser != null ? widget.onPressUser : null,
+                onPressed: widget.onPressUser != null ? widget.onPressUser as void Function()? : null,
                 padding: EdgeInsets.zero,
                 icon: Icon(Icons.person_outline),
                 color: Theme.of(context).primaryColor

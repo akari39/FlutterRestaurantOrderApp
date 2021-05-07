@@ -10,33 +10,33 @@ class ForgotPassWord extends StatefulWidget {
 }
 
 class ForgotPassWordBody extends StatefulWidget {
-  final String loginName;
+  final String? loginName;
 
-  const ForgotPassWordBody({Key key, this.loginName}) : super(key: key);
+  const ForgotPassWordBody({Key? key, this.loginName}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ForgotPassWordBodyState();
 }
 
 class _ForgotPassWordBodyState extends State<ForgotPassWordBody> {
-  String _loginName = "";
+  String? _loginName = "";
   String _verificationCode = "";
   bool _isNextEnabled = false;
 
-  String _nameErrorMessage;
-  String _verificationCodeErrorMessage;
+  String? _nameErrorMessage;
+  String? _verificationCodeErrorMessage;
 
   bool _isLoading = false;
   int _countDown = 0;
 
-  Timer _timer;
+  Timer? _timer;
 
   TextEditingController _textEditingController = TextEditingController();
 
   @override void initState() {
     super.initState();
     if(widget.loginName != null) {
-      if (widget.loginName.isNotEmpty) {
+      if (widget.loginName!.isNotEmpty) {
         _loginName = widget.loginName;
       }
     }
@@ -45,7 +45,7 @@ class _ForgotPassWordBodyState extends State<ForgotPassWordBody> {
   @override void dispose() {
     super.dispose();
     if (_timer != null) {
-      _timer.cancel();
+      _timer!.cancel();
     }
   }
 
@@ -59,7 +59,7 @@ class _ForgotPassWordBodyState extends State<ForgotPassWordBody> {
       var callback = (timer) => {
         setState(() {
           if(_countDown < 1) {
-            _timer.cancel();
+            _timer!.cancel();
           } else {
             _countDown = _countDown - 1;
           }
@@ -85,7 +85,7 @@ class _ForgotPassWordBodyState extends State<ForgotPassWordBody> {
     _nameErrorMessage = null;
     _verificationCodeErrorMessage = null;
 
-    if(_loginName.isNotEmpty && _verificationCode.isNotEmpty) {
+    if(_loginName!.isNotEmpty && _verificationCode.isNotEmpty) {
       _isNextEnabled = true;
     } else {
       _isNextEnabled = false;

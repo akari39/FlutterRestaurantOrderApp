@@ -1,27 +1,29 @@
 import 'package:json_annotation/json_annotation.dart';
 
+part 'dish.g.dart';
+
 abstract class DishInfo {
-  int id;
-  String name;
-  int stock;
-  double price;
+  int? id;
+  String? name;
+  int? stock;
+  double? price;
 
   bool operator <(Dish dish);
 }
 
 @JsonSerializable()
 class ChildDish extends DishInfo with Comparable{
-  double parentId;
-  String parentName;
-  int id;
-  String name;
-  double price;
-  int stock;
+  double? parentId;
+  String? parentName;
+  int? id;
+  String? name;
+  double? price;
+  int? stock;
 
   @override operator ==(Object object) => object is ChildDish && object.id == id;
 
   @override
-  int get hashCode => id;
+  int get hashCode => id!;
   
   ChildDish({this.id,this.name, this.price, this.stock,this.parentId,this.parentName}){
     super.id = id;
@@ -30,10 +32,14 @@ class ChildDish extends DishInfo with Comparable{
     super.price = price;
   }
 
-  @override
-  bool operator <(Dish dish) => dish.id > this.id;
+  factory ChildDish.fromJson(Map<String, dynamic> json) => _$ChildDishFromJson(json);
 
-  bool operator >(Dish dish) => dish.id > this.id;
+  Map<String, dynamic> toJson() => _$ChildDishToJson(this);
+
+  @override
+  bool operator <(Dish dish) => dish.id! > this.id!;
+
+  bool operator >(Dish dish) => dish.id! > this.id!;
 
   @override
   int compareTo(other) {
@@ -46,14 +52,14 @@ class ChildDish extends DishInfo with Comparable{
 
 @JsonSerializable()
 class Dish extends DishInfo{
-  int id;
-  String image;
-  String name;
-  String description;
-  String dishTypes;
-  double price;
-  int stock;
-  List<ChildDish> childTypes;
+  int? id;
+  String? image;
+  String? name;
+  String? description;
+  String? dishTypes;
+  double? price;
+  int? stock;
+  List<ChildDish>? childTypes;
 
   static const int intPrice = 0;
   static const int decimalPrice = 1;
@@ -69,7 +75,7 @@ class Dish extends DishInfo{
   }
 
   @override
-  int get hashCode => id;
+  int get hashCode => id!;
 
   int get cpType => childTypes == null ? singleType : multiType;
 
@@ -77,16 +83,9 @@ class Dish extends DishInfo{
     return other is Dish && other.id == id;
   }
 
-  Dish.fromJson(Map<String, dynamic> json) {
-    this.id = json['id'];
-    this.image = json['image'];
-    this.name = json['name'];
-    this.description = json['description'];
-    this.dishTypes = json['dishTypes'];
-    this.childTypes = json['childTypes'];
-    this.price = json['price'];
-    this.stock = json['stock'];
-  }
+  factory Dish.fromJson(Map<String, dynamic> json) => _$DishFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DishToJson(this);
 
   static Dish sample() {
     return Dish(
@@ -153,28 +152,28 @@ class Dish extends DishInfo{
   }
 
   String getPriceString(int type) =>
-    (cpType == Dish.singleType ? this.price : (this.childTypes.reduce((value,
+    (cpType == Dish.singleType ? this.price : (this.childTypes!.reduce((value,
         element) =>
-    value.price < element.price
+    value.price! < element.price!
         ? value
         : element)).price).toString().split(".")[type];
 
-  int getChildDishesMaxStock() {
+  int? getChildDishesMaxStock() {
     assert(childTypes != null);
-    return this.childTypes.fold(0, (previousValue, element) =>
-    previousValue > element.stock ? previousValue : element.stock);
+    return this.childTypes!.fold(0, (previousValue, element) =>
+    previousValue! > element.stock! ? previousValue : element.stock);
   }
 
   @override
-  bool operator <(Dish dish) => dish.id > this.id;
+  bool operator <(Dish dish) => dish.id! > this.id!;
 
 }
 
 class Choice {
-  Dish dish;
-  ChildDish childDish;
-  int count = 0;
-  double price;
+  Dish? dish;
+  ChildDish? childDish;
+  int? count = 0;
+  double? price;
 
   get dishOfChoice => dish != null ? dish : childDish;
 
@@ -183,27 +182,27 @@ class Choice {
   static clone(Choice choice) => Choice(dish:choice.dish, childDish: choice.childDish, count: choice.count, price: choice.price);
 
   static bool isChosenInStock<T extends DishInfo>(List<Choice> chosenList, T dish) =>
-      chosenList.where((element) => element.dish != null ? element.dish == dish : element.childDish == dish).toList()[0].count < dish.stock;
+      chosenList.where((element) => element.dish != null ? element.dish == dish : element.childDish == dish).toList()[0].count! < dish.stock!;
 
   static bool isInChosenList<T extends DishInfo>(List<Choice> chosenList, T dish) =>
       chosenList.where((element) => element.dish != null ? element.dish == dish : element.childDish == dish).toList().isNotEmpty;
 
-  static List<Choice> getChoices<T extends DishInfo>(List<Choice> chosenList, Dish dish) {
+  static List<Choice>? getChoices<T extends DishInfo>(List<Choice> chosenList, Dish dish) {
     try{
-      return chosenList.where((element) => dish.cpType == Dish.singleType ? element.dish == dish : dish.childTypes.contains(element.childDish)).toList();
+      return chosenList.where((element) => dish.cpType == Dish.singleType ? element.dish == dish : dish.childTypes!.contains(element.childDish)).toList();
     } catch (e){
       return null;
     }
   }
 
-  static Choice getSingleChoice<T extends DishInfo>(List<Choice> chosenList, T dish) {
+  static Choice? getSingleChoice<T extends DishInfo>(List<Choice> chosenList, T dish) {
     return chosenList.where((element) => element.dish != null ? element.dish == dish : element.childDish == dish).toList().isNotEmpty ?
     chosenList.where((element) => element.dish != null ? element.dish == dish : element.childDish == dish).toList()[0] : null;
   }
 
   @override
   toString(){
-    if(dish != null) return "{${dish.name},$count,$price}";
-    else return "{${childDish.name},$count,$price}";
+    if(dish != null) return "{${dish!.name},$count,$price}";
+    else return "{${childDish!.name},$count,$price}";
   }
 }

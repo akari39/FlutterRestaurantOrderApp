@@ -8,11 +8,11 @@ class Home extends StatefulWidget {
 }
 
 class FullAppbar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-  final bool hasParent;
-  final Function onBackPressed;
+  final String? title;
+  final bool? hasParent;
+  final Function? onBackPressed;
 
-  const FullAppbar({Key key, this.title, this.hasParent, this.onBackPressed}) : super(key: key);
+  const FullAppbar({Key? key, this.title, this.hasParent, this.onBackPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,17 +29,17 @@ class FullAppbar extends StatelessWidget implements PreferredSizeWidget {
             child:Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if(hasParent) IconButton(
-                    onPressed: onBackPressed,
+                  if(hasParent!) IconButton(
+                    onPressed: onBackPressed as void Function()?,
                     padding: EdgeInsets.zero,
                     color: Theme.of(context).primaryColor,
                     icon: Icon(Icons.arrow_back),
                     constraints: BoxConstraints()
                   ),
-                  hasParent ? Padding(
+                  hasParent! ? Padding(
                       padding: const EdgeInsets.only(left: 24.0),
-                      child: Text(title,style: Theme.of(context).textTheme.headline6)
-                  ) : Text(title,style: Theme.of(context).textTheme.headline6)
+                      child: Text(title!,style: Theme.of(context).textTheme.headline6)
+                  ) : Text(title!,style: Theme.of(context).textTheme.headline6)
                 ]
             ),
           )
@@ -63,8 +63,8 @@ class _HomeBodyState extends State<_HomeBody> {
   String _password = "";
   bool _isLoginEnabled = false;
 
-  String _nameErrorMessage; //show error in text field when request failed
-  String _passwordErrorMessage; //show error in text field when request failed
+  String? _nameErrorMessage; //show error in text field when request failed
+  String? _passwordErrorMessage; //show error in text field when request failed
 
   bool _isLoading = false; //control the loading indicator
 

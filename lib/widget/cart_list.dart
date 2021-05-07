@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import '../model/dish.dart';
 
 class CartList extends StatefulWidget {
-  final List<Choice> choices;
-  final List<Dish> dishes;
-  final Function onAdd;
-  final Function onRemove;
+  final List<Choice>? choices;
+  final List<Dish>? dishes;
+  final Function? onAdd;
+  final Function? onRemove;
 
-  const CartList({Key key, this.choices, this.onAdd, this.onRemove, this.dishes}) : super(key: key);
+  const CartList({Key? key, this.choices, this.onAdd, this.onRemove, this.dishes}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _CartListState();
@@ -19,7 +19,7 @@ class _CartListState extends State<CartList>{
 
   @override
   Widget build(BuildContext context) {
-    if(widget.choices.isEmpty) return Container(alignment:Alignment.center,
+    if(widget.choices!.isEmpty) return Container(alignment:Alignment.center,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -51,7 +51,7 @@ class _CartListState extends State<CartList>{
         )),
         Expanded(
           child: ListView.builder(
-              itemCount: widget.choices.length,itemBuilder: (context, index){
+              itemCount: widget.choices!.length,itemBuilder: (context, index){
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -61,9 +61,9 @@ class _CartListState extends State<CartList>{
                   CachedNetworkImage(
                     width: 80,
                     height: 80,
-                    imageUrl: widget.choices[index].dish != null ? widget.choices[index].dish.image :
-                    widget.dishes.where((element) =>
-                    element.childTypes != null ? element.childTypes.contains(widget.choices[index].childDish) : false).toList()[0].image,
+                    imageUrl: widget.choices![index].dish != null ? widget.choices![index].dish!.image! :
+                    widget.dishes!.where((element) =>
+                    element.childTypes != null ? element.childTypes!.contains(widget.choices![index].childDish) : false).toList()[0].image!,
                     fit: BoxFit.fill,
                     placeholder: (context, url) => CircularProgressIndicator(),
                     errorWidget: (context, url, error) => Icon(Icons.error_outline)
@@ -75,11 +75,11 @@ class _CartListState extends State<CartList>{
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.choices[index].childDish == null ? widget.choices[index].dish.name : widget.choices[index].childDish.parentName,
+                          Text(widget.choices![index].childDish == null ? widget.choices![index].dish!.name! : widget.choices![index].childDish!.parentName!,
                             style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                           ),
-                          if(widget.choices[index].childDish != null)
-                            Text(widget.choices[index].childDish.name,
+                          if(widget.choices![index].childDish != null)
+                            Text(widget.choices![index].childDish!.name!,
                             style: TextStyle(fontSize: 14, color: Theme.of(context).primaryColor))
                         ],
                       ),
@@ -97,20 +97,20 @@ class _CartListState extends State<CartList>{
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                      text: "¥${widget.choices[index].price.toStringAsFixed(2).split(".")[0]}.",
+                                      text: "¥${widget.choices![index].price!.toStringAsFixed(2).split(".")[0]}.",
                                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
                                   ),
                                   TextSpan(
-                                      text: "${widget.choices[index].price.toStringAsFixed(2).split(".")[1]}",
+                                      text: "${widget.choices![index].price!.toStringAsFixed(2).split(".")[1]}",
                                       style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
                                   )
                                 ]
                               )
                             ),
-                            Text("¥${widget.choices[index].dish != null ?
-                            widget.choices[index].dish.price : widget.choices[index].childDish.price}",
+                            Text("¥${widget.choices![index].dish != null ?
+                            widget.choices![index].dish!.price : widget.choices![index].childDish!.price}",
                                 style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor)),
-                            Text("${widget.choices[index].count}份",style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor))
+                            Text("${widget.choices![index].count}份",style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor))
                           ]
                         ),
                         Padding(
@@ -118,19 +118,19 @@ class _CartListState extends State<CartList>{
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              IconButton(icon: Icon(Icons.remove_circle_outline, size: 24, color: int.parse(widget.choices[index].dishOfChoice.stock) > 0 ? Theme.of(context).primaryColor : Colors.black26),
-                                onPressed: int.parse(widget.choices[index].dishOfChoice.stock) > 0 ?
-                                    () {widget.onRemove(widget.choices[index]);} : null,
+                              IconButton(icon: Icon(Icons.remove_circle_outline, size: 24, color: int.parse(widget.choices![index].dishOfChoice.stock) > 0 ? Theme.of(context).primaryColor : Colors.black26),
+                                onPressed: int.parse(widget.choices![index].dishOfChoice.stock) > 0 ?
+                                    () {widget.onRemove!(widget.choices![index]);} : null,
                                 padding: EdgeInsets.zero,
                                 constraints: BoxConstraints()),
                               Padding(
                                 padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                                child: Text("${widget.choices[index].count}", style: TextStyle(fontSize: 17))
+                                child: Text("${widget.choices![index].count}", style: TextStyle(fontSize: 17))
                               ),
-                              IconButton(icon: Icon(Icons.add_circle_outline, size: 24, color: int.parse(widget.choices[index].dishOfChoice.stock) > widget.choices[index].count ? Theme.of(context).primaryColor : Colors.black26),
+                              IconButton(icon: Icon(Icons.add_circle_outline, size: 24, color: int.parse(widget.choices![index].dishOfChoice.stock) > widget.choices![index].count! ? Theme.of(context).primaryColor : Colors.black26),
                                 onPressed:
-                                int.parse(widget.choices[index].dishOfChoice.stock) > widget.choices[index].count ?
-                                    () { widget.onAdd(widget.choices[index]); } : null,
+                                int.parse(widget.choices![index].dishOfChoice.stock) > widget.choices![index].count! ?
+                                    () { widget.onAdd!(widget.choices![index]); } : null,
                                 padding: EdgeInsets.zero,
                                 constraints: BoxConstraints()),
                             ]
@@ -139,7 +139,7 @@ class _CartListState extends State<CartList>{
                       ],
                     ),
                   ),
-                  if(index != widget.choices.length-1) Divider()
+                  if(index != widget.choices!.length-1) Divider()
                 ],
               ),
             );

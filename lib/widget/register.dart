@@ -23,14 +23,14 @@ class _RegisterBodyState extends State<_RegisterBody> {
   String _loginNameType = "name";
 
   String _loginName = "";
-  String _password = "";
+  String? _password = "";
   String _firstInputPassword = "";
   String _secondInputPassword = "";
 
-  String _nameErrorMessage = "";
+  String? _nameErrorMessage = "";
   int _firstCounter = 0;
-  String _firstErrorMessage = "";
-  String _secondErrorMessage = "";
+  String? _firstErrorMessage = "";
+  String? _secondErrorMessage = "";
 
   bool _isRegisterEnabled = false;
 

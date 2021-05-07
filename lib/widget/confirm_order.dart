@@ -9,9 +9,9 @@ import 'package:wireless_order_system/widget/home.dart';
 import 'menu.dart';
 
 class OrderList extends StatelessWidget {
-  final List<Choice> choices;
-  final List<Dish> dishes;
-  final String totalPrice;
+  final List<Choice>? choices;
+  final List<Dish>? dishes;
+  final String? totalPrice;
 
   OrderList({this.choices, this.dishes, this.totalPrice});
 
@@ -32,7 +32,7 @@ class OrderList extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: choices.length,
+                itemCount: choices!.length,
                 itemBuilder: (context,index) {
                   return Column(
                     children: [
@@ -44,9 +44,9 @@ class OrderList extends StatelessWidget {
                             CachedNetworkImage(
                               width: 80,
                               height: 80,
-                              imageUrl: choices[index].dish != null ? choices[index].dish.image :
-                              dishes.where((element) =>
-                              element.childTypes != null ? element.childTypes.contains(choices[index].childDish) : false).toList()[0].image,
+                              imageUrl: choices![index].dish != null ? choices![index].dish!.image! :
+                              dishes!.where((element) =>
+                              element.childTypes != null ? element.childTypes!.contains(choices![index].childDish) : false).toList()[0].image!,
                               fit: BoxFit.fill,
                               placeholder: (context, url) => CircularProgressIndicator(),
                               errorWidget: (context, url, error) => Icon(Icons.error_outline)
@@ -58,11 +58,11 @@ class OrderList extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(choices[index].childDish == null ? choices[index].dish.name : choices[index].childDish.parentName,
+                                    Text(choices![index].childDish == null ? choices![index].dish!.name! : choices![index].childDish!.parentName!,
                                       style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                                     ),
-                                    if(choices[index].childDish != null)
-                                      Text(choices[index].childDish.name,
+                                    if(choices![index].childDish != null)
+                                      Text(choices![index].childDish!.name!,
                                       style: TextStyle(fontSize: 14, color: Theme.of(context).primaryColor))
                                   ],
                                 ),
@@ -78,20 +78,20 @@ class OrderList extends StatelessWidget {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: "¥${choices[index].price.toStringAsFixed(2).split(".")[0]}.",
+                                            text: "¥${choices![index].price!.toStringAsFixed(2).split(".")[0]}.",
                                             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
                                           ),
                                           TextSpan(
-                                            text: "${choices[index].price.toStringAsFixed(2).split(".")[1]}",
+                                            text: "${choices![index].price!.toStringAsFixed(2).split(".")[1]}",
                                             style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
                                           )
                                         ]
                                       )
                                     ),
-                                    Text("¥${choices[index].dish != null ?
-                                    choices[index].dish.price : choices[index].childDish.price}",
+                                    Text("¥${choices![index].dish != null ?
+                                    choices![index].dish!.price : choices![index].childDish!.price}",
                                         style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor)),
-                                    Text("${choices[index].count}份",style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor))
+                                    Text("${choices![index].count}份",style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor))
                                   ]
                                 )
                               ],
@@ -99,7 +99,7 @@ class OrderList extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if(index != choices.length-1) Divider()
+                      if(index != choices!.length-1) Divider()
                     ],
                   );
                 }),
@@ -115,11 +115,11 @@ class OrderList extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: "¥${totalPrice.split(".")[0]}.",
+                              text: "¥${totalPrice!.split(".")[0]}.",
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
                             ),
                             TextSpan(
-                              text: "${totalPrice.split(".")[1]}",
+                              text: "${totalPrice!.split(".")[1]}",
                               style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
                             )
                           ]
@@ -137,18 +137,18 @@ class OrderList extends StatelessWidget {
 }
 
 class ConfirmOrder extends StatelessWidget {
-  final List<Choice> choices;
-  final List<Dish> dishes;
-  final String totalPrice;
+  final List<Choice>? choices;
+  final List<Dish>? dishes;
+  final String? totalPrice;
 
-  final Function addBackCart;
+  final Function? addBackCart;
 
   ConfirmOrder({this.choices, this.dishes, this.totalPrice, this.addBackCart});
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {addBackCart(); return true;},
+      onWillPop: () async {addBackCart!(); return true;},
       child: Scaffold(
         extendBody: true,
         appBar: FullAppbar(
@@ -156,13 +156,13 @@ class ConfirmOrder extends StatelessWidget {
           hasParent: true,
           onBackPressed: () {
             Navigator.of(context).pop();
-            addBackCart();
+            addBackCart!();
           },
         ),
         body: Column(
           children: [
             Services(
-                availableServices: Restaurant.sample().services
+                availableServices: Restaurant.sample()!.services
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -219,11 +219,11 @@ class ConfirmOrder extends StatelessWidget {
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: "¥${totalPrice.split(".")[0]}.",
+                                    text: "¥${totalPrice!.split(".")[0]}.",
                                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
                                   ),
                                   TextSpan(
-                                    text: "${totalPrice.split(".")[1]}",
+                                    text: "${totalPrice!.split(".")[1]}",
                                     style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
                                   )
                                 ]

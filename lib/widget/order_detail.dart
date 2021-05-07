@@ -8,11 +8,11 @@ import 'package:wireless_order_system/widget/start.dart';
 import 'menu.dart';
 
 class OrderDetail extends StatefulWidget {
-  final List<Choice> choices;
-  final List<Dish> dishes;
-  final String totalPrice;
+  final List<Choice>? choices;
+  final List<Dish>? dishes;
+  final String? totalPrice;
 
-  const OrderDetail({Key key, this.totalPrice, this.choices, this.dishes}) : super(key: key);
+  const OrderDetail({Key? key, this.totalPrice, this.choices, this.dishes}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _OrderDetailState();
@@ -23,15 +23,15 @@ class _OrderDetailState extends State<OrderDetail>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: DetailAppBar(
-        restaurantName: Restaurant.sample().name,
-        restaurantSubName: Restaurant.sample().subName,
-        restaurantImage: Restaurant.sample().restaurantImage,
+        restaurantName: Restaurant.sample()!.name,
+        restaurantSubName: Restaurant.sample()!.subName,
+        restaurantImage: Restaurant.sample()!.restaurantImage,
         desk: "A10"
       ),
       body: Column(
         children: [
           Services(
-            availableServices: Restaurant.sample().services
+            availableServices: Restaurant.sample()!.services
           ),
           Padding(
             padding: const EdgeInsets.all(24.0),

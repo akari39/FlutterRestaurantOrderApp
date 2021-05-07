@@ -27,9 +27,9 @@ class _ChooseServiceState extends State<ChooseService> {
     // TODO: implement build
     return Scaffold(
       appBar: DetailAppBar(
-        restaurantImage: Restaurant.sample().restaurantImage,
-        restaurantName: Restaurant.sample().name,
-        restaurantSubName: Restaurant.sample().subName,
+        restaurantImage: Restaurant.sample()!.restaurantImage,
+        restaurantName: Restaurant.sample()!.name,
+        restaurantSubName: Restaurant.sample()!.subName,
         desk: "A10",
       ),
       body: Column(

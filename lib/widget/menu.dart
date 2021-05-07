@@ -12,11 +12,11 @@ import '../model/dish.dart';
 import 'confirm_order.dart';
 
 class _LeftColumn extends StatefulWidget {
-  final int selectedColumn;
-  final Function onClickColumnItem;
-  final Map<String,String> dishTypes;
+  final int? selectedColumn;
+  final Function? onClickColumnItem;
+  final Map<String,String>? dishTypes;
 
-  const _LeftColumn({Key key, this.onClickColumnItem, this.selectedColumn, this.dishTypes}) : super(key: key);
+  const _LeftColumn({Key? key, this.onClickColumnItem, this.selectedColumn, this.dishTypes}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _LeftColumnState();
@@ -27,7 +27,7 @@ class _LeftColumnState extends State<_LeftColumn>{
   Widget build(BuildContext context) {
     return ListView.builder(
       scrollDirection: Axis.vertical,
-      itemCount: widget.dishTypes.length,
+      itemCount: widget.dishTypes!.length,
       itemBuilder: (context, index) {
       return Card(
         shape: RoundedRectangleBorder(
@@ -43,13 +43,13 @@ class _LeftColumnState extends State<_LeftColumn>{
           height: 80,
           child: InkWell(
             borderRadius: BorderRadius.circular(10),
-            onTap: () { widget.onClickColumnItem(index); },
+            onTap: () { widget.onClickColumnItem!(index); },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
-                  child: CachedNetworkImage(imageUrl: widget.dishTypes.values.elementAt(index),
+                  child: CachedNetworkImage(imageUrl: widget.dishTypes!.values.elementAt(index),
                     fit: BoxFit.fill,
                     height: 35,
                     width: 35,
@@ -59,7 +59,7 @@ class _LeftColumnState extends State<_LeftColumn>{
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Container(
-                      child: Text(widget.dishTypes.keys.elementAt(index),
+                      child: Text(widget.dishTypes!.keys.elementAt(index),
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         style: TextStyle(fontWeight: widget.selectedColumn == index ? FontWeight.bold : FontWeight.normal, fontSize: 12),
@@ -76,14 +76,14 @@ class _LeftColumnState extends State<_LeftColumn>{
 }
 
 class _RightColumn extends StatefulWidget {
-  final List<Dish> dishList;
-  final List<Choice> chosenList;
-  final Function onRemove;
-  final Function onAdd;
+  final List<Dish>? dishList;
+  final List<Choice>? chosenList;
+  final Function? onRemove;
+  final Function? onAdd;
 
-  final Function setStateCallback;
+  final Function? setStateCallback;
 
-  const _RightColumn({Key key, this.dishList, this.onAdd, this.chosenList, this.onRemove, this.setStateCallback}) : super(key: key);
+  const _RightColumn({Key? key, this.dishList, this.onAdd, this.chosenList, this.onRemove, this.setStateCallback}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _RightColumnState();
@@ -91,7 +91,7 @@ class _RightColumn extends StatefulWidget {
 
 class _RightColumnState extends State<_RightColumn>{
 
-  pushDetail(Dish dish, List<Choice> choices) {
+  pushDetail(Dish dish, List<Choice>? choices) {
     showBarModalBottomSheet(duration: Duration(milliseconds: 250), context: context, builder: (context) {
       return DishDetail(
         dish: dish,
@@ -105,7 +105,7 @@ class _RightColumnState extends State<_RightColumn>{
 
   @override
   Widget build(BuildContext context) {
-    if (widget.dishList.length == 0) return
+    if (widget.dishList!.length == 0) return
       Container(alignment: Alignment.center,
         child:
         Column(
@@ -121,7 +121,7 @@ class _RightColumnState extends State<_RightColumn>{
     );
     else return ListView.builder(
       scrollDirection: Axis.vertical,
-      itemCount: widget.dishList.length,
+      itemCount: widget.dishList!.length,
       itemBuilder: (context,index) {
         return Container(
           constraints: BoxConstraints(
@@ -133,7 +133,7 @@ class _RightColumnState extends State<_RightColumn>{
                 padding: const EdgeInsets.only(left: 8.0),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10.0),
-                  onTap: () {pushDetail(widget.dishList[index], Choice.getChoices(widget.chosenList, widget.dishList[index]));},
+                  onTap: () {pushDetail(widget.dishList![index], Choice.getChoices(widget.chosenList!, widget.dishList![index]));},
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                     child: Column(
@@ -148,7 +148,7 @@ class _RightColumnState extends State<_RightColumn>{
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8.0),
                                   child: CachedNetworkImage(width:70, height: 70,
-                                    imageUrl: widget.dishList[index].image,
+                                    imageUrl: widget.dishList![index].image!,
                                     placeholder: (context, url) => CircularProgressIndicator(),
                                     errorWidget: (context, url, error) => Icon(Icons.error_outline),
                                   ),
@@ -161,17 +161,17 @@ class _RightColumnState extends State<_RightColumn>{
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(widget.dishList[index].name, style: TextStyle(fontWeight: FontWeight.bold)),
-                                          if(widget.dishList[index].cpType == Dish.singleType)
+                                          Text(widget.dishList![index].name!, style: TextStyle(fontWeight: FontWeight.bold)),
+                                          if(widget.dishList![index].cpType == Dish.singleType)
                                           RichText(
                                               text: TextSpan(
                                                   children: [
                                                     TextSpan(
-                                                        text: "¥${widget.dishList[index].getPriceString(Dish.intPrice)}.",
+                                                        text: "¥${widget.dishList![index].getPriceString(Dish.intPrice)}.",
                                                         style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
                                                     ),
                                                     TextSpan(
-                                                        text: "${widget.dishList[index].getPriceString(Dish.decimalPrice)}",
+                                                        text: "${widget.dishList![index].getPriceString(Dish.decimalPrice)}",
                                                         style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor)
                                                     )
                                                   ]
@@ -189,11 +189,11 @@ class _RightColumnState extends State<_RightColumn>{
                                               constraints: BoxConstraints(
                                                 maxWidth: 118
                                               ),
-                                              child: Text(widget.dishList[index].description, style: Theme.of(context).textTheme.caption)
+                                              child: Text(widget.dishList![index].description!, style: Theme.of(context).textTheme.caption)
                                             ),
                                             Padding(
                                               padding: const EdgeInsets.only(top: 4.0),
-                                              child: Text("${ widget.dishList[index].stock != null ? "库存" + widget.dishList[index].stock.toString() :
+                                              child: Text("${ widget.dishList![index].stock != null ? "库存" + widget.dishList![index].stock.toString() :
                                               ""}", style: TextStyle(color: Colors.black54, fontSize: 12)),
                                             )
                                           ],
@@ -213,23 +213,23 @@ class _RightColumnState extends State<_RightColumn>{
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Choice.isInChosenList(widget.chosenList, widget.dishList[index]) && widget.dishList[index].childTypes == null ?
+                                Choice.isInChosenList(widget.chosenList!, widget.dishList![index]) && widget.dishList![index].childTypes == null ?
                                 Padding(
                                   padding: const EdgeInsets.only(top: 5.0),
                                   child: Row(
                                     children: [
-                                      IconButton(icon: Icon(Icons.remove_circle_outline, size: 24, color: widget.dishList[index].stock > 0 ? Theme.of(context).primaryColor : Colors.black26),
-                                          onPressed: widget.dishList[index].stock > 0 ? () {widget.onRemove(widget.dishList[index]);} : null,
+                                      IconButton(icon: Icon(Icons.remove_circle_outline, size: 24, color: widget.dishList![index].stock! > 0 ? Theme.of(context).primaryColor : Colors.black26),
+                                          onPressed: widget.dishList![index].stock! > 0 ? () {widget.onRemove!(widget.dishList![index]);} : null,
                                           padding: EdgeInsets.zero,
                                           constraints: BoxConstraints()),
                                       Padding(
                                           padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                                          child: Text("${Choice.getSingleChoice(widget.chosenList, widget.dishList[index]).count}", style: TextStyle(fontSize: 17))
+                                          child: Text("${Choice.getSingleChoice(widget.chosenList!, widget.dishList![index])!.count}", style: TextStyle(fontSize: 17))
                                       ),
-                                      IconButton(icon: Icon(Icons.add_circle_outline, size: 24, color: Choice.isChosenInStock(widget.chosenList, widget.dishList[index]) ? Theme.of(context).primaryColor : Colors.black26),
+                                      IconButton(icon: Icon(Icons.add_circle_outline, size: 24, color: Choice.isChosenInStock(widget.chosenList!, widget.dishList![index]) ? Theme.of(context).primaryColor : Colors.black26),
                                           onPressed:
-                                              Choice.isChosenInStock(widget.chosenList, widget.dishList[index]) ?
-                                              () { widget.onAdd(widget.dishList[index]); } : null,
+                                              Choice.isChosenInStock(widget.chosenList!, widget.dishList![index]) ?
+                                              () { widget.onAdd!(widget.dishList![index]); } : null,
                                           padding: EdgeInsets.zero,
                                           constraints: BoxConstraints()),
                                     ]
@@ -237,15 +237,15 @@ class _RightColumnState extends State<_RightColumn>{
                                 )
                                 : InkWell(
                                       borderRadius: BorderRadius.circular(10.0),
-                                      onTap: widget.dishList[index].stock != null ?
-                                        widget.dishList[index].stock > 0 ? () { widget.onAdd(widget.dishList[index]); } : null :
-                                          () { pushDetail(widget.dishList[index], Choice.getChoices(widget.chosenList, widget.dishList[index])); },
-                                      child: (widget.dishList[index].stock != null ?
-                                        widget.dishList[index].stock > 0 : widget.dishList[index].getChildDishesMaxStock() > 0) ?
+                                      onTap: widget.dishList![index].stock != null ?
+                                        widget.dishList![index].stock! > 0 ? () { widget.onAdd!(widget.dishList![index]); } : null :
+                                          () { pushDetail(widget.dishList![index], Choice.getChoices(widget.chosenList!, widget.dishList![index])); },
+                                      child: (widget.dishList![index].stock != null ?
+                                        widget.dishList![index].stock! > 0 : widget.dishList![index].getChildDishesMaxStock()! > 0) ?
                                       Padding(
                                         padding: const EdgeInsets.all(4.0),
                                         child: Row(children: [
-                                          Icon(widget.dishList[index].stock != null ?
+                                          Icon(widget.dishList![index].stock != null ?
                                               Icons.add_circle_outline:
                                               Icons.library_add_check_outlined,
                                               size: 24,
@@ -253,9 +253,9 @@ class _RightColumnState extends State<_RightColumn>{
                                           ),
                                           Padding(
                                             padding: const EdgeInsets.only(left: 8.0),
-                                            child: Text(widget.dishList[index].cpType == Dish.singleType ? "添加" :
-                                            widget.chosenList.fold(false, (previousValue, element) => widget.dishList[index].childTypes.contains(element.childDish != null ? element.childDish : 0)) ?
-                                            "更改(${widget.chosenList.fold(0, (previousValue, element) => previousValue + (widget.dishList[index].childTypes.contains(element.childDish) ? element.count : 0))})" : "选择",
+                                            child: Text(widget.dishList![index].cpType == Dish.singleType ? "添加" :
+                                            widget.chosenList!.fold(false, (dynamic previousValue, element) => widget.dishList![index].childTypes!.contains(element.childDish != null ? element.childDish : 0)) ?
+                                            "更改(${widget.chosenList!.fold(0, (dynamic previousValue, element) => previousValue + (widget.dishList![index].childTypes!.contains(element.childDish) ? element.count : 0))})" : "选择",
                                               style: TextStyle(
                                                   fontSize: 17,
                                                   fontWeight: FontWeight.bold,
@@ -291,7 +291,7 @@ class _RightColumnState extends State<_RightColumn>{
                   ),
                 ),
               ),
-              if(index != widget.dishList.length - 1)
+              if(index != widget.dishList!.length - 1)
                 Padding(
                     padding: const EdgeInsets.only(left: 100.0),
                     child: Divider(height: 0.5)
@@ -305,7 +305,7 @@ class _RightColumnState extends State<_RightColumn>{
 }
 
 class _ServiceIcon extends StatelessWidget {
-  final String service;
+  final String? service;
 
   _ServiceIcon({this.service});
 
@@ -323,9 +323,9 @@ class _ServiceIcon extends StatelessWidget {
 
 
 class _CartOverlay extends StatefulWidget {
-  final OverlayEntry overlayEntry;
+  final OverlayEntry? overlayEntry;
 
-  const _CartOverlay({Key key, this.overlayEntry}) : super(key: key);
+  const _CartOverlay({Key? key, this.overlayEntry}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _CartOverlayState();
@@ -335,13 +335,13 @@ class _CartOverlay extends StatefulWidget {
 class _CartOverlayState extends State<_CartOverlay>{
   @override initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       _showOverlay();
     });
   }
 
   _showOverlay() {
-    Overlay.of(context).insert(widget.overlayEntry);
+    Overlay.of(context)!.insert(widget.overlayEntry!);
   }
 
   @override
@@ -351,9 +351,9 @@ class _CartOverlayState extends State<_CartOverlay>{
 }
 
 class Services extends StatelessWidget{
-  final List<String> availableServices;
+  final List<String>? availableServices;
 
-  const Services({Key key, this.availableServices}) : super(key: key);
+  const Services({Key? key, this.availableServices}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -364,7 +364,7 @@ class Services extends StatelessWidget{
         child: ListView.builder(
           padding: EdgeInsets.only(left: 16.0, right: 16.0),
           scrollDirection: Axis.horizontal,
-          itemCount: availableServices.length,
+          itemCount: availableServices!.length,
           itemBuilder: (context, index) {
             return SizedBox(
               child: Card(
@@ -383,10 +383,10 @@ class Services extends StatelessWidget{
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          _ServiceIcon(service: availableServices[index]),
+                          _ServiceIcon(service: availableServices![index]),
                           Padding(
                             padding: const EdgeInsets.only(left: 16.0),
-                            child: Text(availableServices[index], style: TextStyle(fontWeight: FontWeight.bold)),
+                            child: Text(availableServices![index], style: TextStyle(fontWeight: FontWeight.bold)),
                           )
                         ],
                       ),
@@ -403,14 +403,14 @@ class Services extends StatelessWidget{
 }
 
 class SearchBar extends StatelessWidget {
-  final TextEditingController textEditingController;
-  final String searchText;
-  final Function onClickClose;
-  final Function onTapBar;
-  final Function onSubmitted;
-  final Function onChanged;
+  final TextEditingController? textEditingController;
+  final String? searchText;
+  final Function? onClickClose;
+  final Function? onTapBar;
+  final Function? onSubmitted;
+  final Function? onChanged;
 
-  const SearchBar({Key key, this.textEditingController, this.onClickClose, this.onTapBar, this.onSubmitted, this.onChanged, this.searchText}) : super(key: key);
+  const SearchBar({Key? key, this.textEditingController, this.onClickClose, this.onTapBar, this.onSubmitted, this.onChanged, this.searchText}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -426,22 +426,22 @@ class SearchBar extends StatelessWidget {
               prefixIcon: Icon(Icons.search),
               hintText: "搜索菜单",
               contentPadding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-              suffixIcon: textEditingController.text != "" ?
+              suffixIcon: textEditingController!.text != "" ?
               InkWell(
                   child: Icon(Icons.clear), onTap: () {
-                    onClickClose();
+                    onClickClose!();
                     },
                   borderRadius: BorderRadius.circular(30.0)
               ) : null
           ),
           onTap: () {
-            onTapBar();
+            onTapBar!();
           },
           onSubmitted: (val) {
-            onSubmitted(val);
+            onSubmitted!(val);
           },
           onChanged: (val) {
-            onChanged(val);
+            onChanged!(val);
           },
         ),
       ),
@@ -451,9 +451,9 @@ class SearchBar extends StatelessWidget {
 }
 
 class _MenuBody extends StatefulWidget {
-  final List<String> availableServices;
-  final Map<String, String> dishTypes;
-  final List<Dish> dishes;
+  final List<String>? availableServices;
+  final Map<String, String>? dishTypes;
+  final List<Dish>? dishes;
 
   _MenuBody({this.availableServices, this.dishes, this.dishTypes});
 
@@ -466,15 +466,15 @@ class _MenuBodyState extends State<_MenuBody> {
   String _searchText = "";
   TextEditingController _textEditingController = TextEditingController();
 
-  int selectedColumn = 0;
-  int latestSelectedColumn;
-  List<Dish> selectedColumnDishes;
+  int? selectedColumn = 0;
+  int? latestSelectedColumn;
+  List<Dish>? selectedColumnDishes;
   List<Choice> choices = [];
   double totalPrice = 0.0;
 
-  OverlayEntry overlayEntry;
+  OverlayEntry? overlayEntry;
 
-  Function setStateCallback;
+  late Function setStateCallback;
 
   bool forbiddenOpenCartList = false;
 
@@ -486,9 +486,9 @@ class _MenuBodyState extends State<_MenuBody> {
             dishes: widget.dishes,
             onAdd: (Choice choice) {
               setState((){
-                if (choices.contains(choice)) choice.count++;
+                if (choices.contains(choice)) choice.count = choice.count! + 1;
                 calculatePrice();
-                overlayEntry.markNeedsBuild();
+                overlayEntry!.markNeedsBuild();
                 try{
                   setStateCallback(choices);
                 } catch(e) {log(e.toString());}
@@ -497,10 +497,10 @@ class _MenuBodyState extends State<_MenuBody> {
             onRemove: (Choice choice) {
               if (choices.contains(choice)) {
                 setState((){
-                  choice.count--;
+                  choice.count = choice.count! - 1;
                   if (choice.count == 0) choices.remove(choice);
                   calculatePrice();
-                  overlayEntry.markNeedsBuild();
+                  overlayEntry!.markNeedsBuild();
                   try{
                     setStateCallback(choices);
                   } catch(e) {log(e.toString());}
@@ -514,14 +514,14 @@ class _MenuBodyState extends State<_MenuBody> {
 
   @override void initState() {
     super.initState();
-    selectedColumnDishes = widget.dishes.where((element) => element.dishTypes ==
-        widget.dishTypes.keys.toList()[selectedColumn])
+    selectedColumnDishes = widget.dishes!.where((element) => element.dishTypes ==
+        widget.dishTypes!.keys.toList()[selectedColumn!])
         .toList();
     overlayEntry = OverlayEntry(builder: (context) {
       return SafeArea(
         child: Container(
           alignment: Alignment.bottomCenter,
-          child: _Cart(cartItemsCount: "${choices.length != 0 ? (choices.fold(0, (previousValue, element) => previousValue + element.count)).toInt() : 0}", totalPrice: totalPrice.toStringAsFixed(2),
+          child: _Cart(cartItemsCount: "${choices.length != 0 ? (choices.fold(0, (dynamic previousValue, element) => previousValue + element.count)).toInt() : 0}", totalPrice: totalPrice.toStringAsFixed(2),
             onClickCartIcon: () {
               if(!forbiddenOpenCartList) pushCartList();
               forbiddenOpenCartList = true;
@@ -533,13 +533,13 @@ class _MenuBodyState extends State<_MenuBody> {
                   dishes: widget.dishes,
                   totalPrice: totalPrice.toStringAsFixed(2),
                   addBackCart: () {
-                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                      Overlay.of(context).insert(overlayEntry);
+                    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                      Overlay.of(context)!.insert(overlayEntry!);
                     });
                   },
                 );
               }));
-              overlayEntry.remove();
+              overlayEntry!.remove();
             } : null,
           ),
         )
@@ -553,8 +553,8 @@ class _MenuBodyState extends State<_MenuBody> {
       _searchText = val;
       if(val == "") {
         selectedColumn = latestSelectedColumn;
-        selectedColumnDishes = widget.dishes.where((element) => element.dishTypes == widget.dishTypes.keys.toList()[selectedColumn]).toList();
-      } else {selectedColumnDishes = widget.dishes.where((element) => element.name.contains(val) || element.description.contains(val) || element.dishTypes.contains(val)).toList();};
+        selectedColumnDishes = widget.dishes!.where((element) => element.dishTypes == widget.dishTypes!.keys.toList()[selectedColumn!]).toList();
+      } else {selectedColumnDishes = widget.dishes!.where((element) => element.name!.contains(val) || element.description!.contains(val) || element.dishTypes!.contains(val)).toList();};
     });
   }
 
@@ -562,8 +562,8 @@ class _MenuBodyState extends State<_MenuBody> {
     totalPrice = 0.0;
     setState(() {
       choices.forEach((element) {
-        element.price = (element.childDish == null) ? element.dish.price : element.childDish.price * element.count;
-        totalPrice += element.price;
+        element.price = (element.childDish == null) ? element.dish!.price : element.childDish!.price! * element.count!;
+        totalPrice += element.price!;
       });
     });
   }
@@ -584,7 +584,7 @@ class _MenuBodyState extends State<_MenuBody> {
               _textEditingController.clear();
               _searchText = "";
               selectedColumn = latestSelectedColumn;
-              selectedColumnDishes = widget.dishes.where((element) => element.dishTypes == widget.dishTypes.keys.toList()[selectedColumn]).toList();
+              selectedColumnDishes = widget.dishes!.where((element) => element.dishTypes == widget.dishTypes!.keys.toList()[selectedColumn!]).toList();
             });
           },
           onTapBar: () {
@@ -611,7 +611,7 @@ class _MenuBodyState extends State<_MenuBody> {
                   onClickColumnItem: (index) {
                     setState(() {
                       selectedColumn = index;
-                      selectedColumnDishes = widget.dishes.where((element) => element.dishTypes == widget.dishTypes.keys.toList()[selectedColumn]).toList();
+                      selectedColumnDishes = widget.dishes!.where((element) => element.dishTypes == widget.dishTypes!.keys.toList()[selectedColumn!]).toList();
                     });
                   },
                 ),
@@ -624,12 +624,12 @@ class _MenuBodyState extends State<_MenuBody> {
                       if (!Choice.isInChosenList(choices, dish)) {
                         setState(() {
                           choices.add(dish is Dish ? Choice(dish: dish, count: 1) : Choice(childDish: dish as ChildDish, count: 1));
-                          overlayEntry.markNeedsBuild();
+                          overlayEntry!.markNeedsBuild();
                         });
                       } else {
                         setState(() {
-                          Choice.getSingleChoice(choices, dish).count++;
-                          overlayEntry.markNeedsBuild();
+                          Choice.getSingleChoice(choices, dish)!.count = Choice.getSingleChoice(choices, dish)!.count! + 1;
+                          overlayEntry!.markNeedsBuild();
                         });
                       }
                       setState(() {
@@ -640,13 +640,13 @@ class _MenuBodyState extends State<_MenuBody> {
                       if(!Choice.isInChosenList(choices, dish)) return;
                       var choice = Choice.getSingleChoice(choices, dish);
                       setState(() {
-                        choice.count --;
-                        if(choice.count == 0) choices.remove(choice);
-                        overlayEntry.markNeedsBuild();
+                        choice?.count = choice.count! + 1;
+                        if(choice?.count == 0) choices.remove(choice);
+                        overlayEntry!.markNeedsBuild();
                       });
                       setState(() {
                         calculatePrice();
-                        overlayEntry.markNeedsBuild();
+                        overlayEntry!.markNeedsBuild();
                       });
                     },
                     chosenList: choices
@@ -662,12 +662,12 @@ class _MenuBodyState extends State<_MenuBody> {
 }
 
 class _Cart extends StatefulWidget {
-  final String cartItemsCount;
-  final String totalPrice;
-  final Function onClickCartIcon;
-  final Function onClickPlaceOrder;
+  final String? cartItemsCount;
+  final String? totalPrice;
+  final Function? onClickCartIcon;
+  final Function? onClickPlaceOrder;
 
-  const _Cart({Key key, this.totalPrice, this.onClickCartIcon, this.onClickPlaceOrder, this.cartItemsCount}) : super(key: key);
+  const _Cart({Key? key, this.totalPrice, this.onClickCartIcon, this.onClickPlaceOrder, this.cartItemsCount}) : super(key: key);
 
 
   @override
@@ -708,7 +708,7 @@ class _CartState extends State<_Cart> {
                                   color: Colors.black54,
                                   size: 42),
                                 onTap: () {
-                                widget.onClickCartIcon();
+                                widget.onClickCartIcon!();
                               }
                           )
                         ),
@@ -723,7 +723,7 @@ class _CartState extends State<_Cart> {
                               color: Theme.of(context).primaryColor,
                               shape: BoxShape.circle
                             ),
-                            child: Text(widget.cartItemsCount, style:
+                            child: Text(widget.cartItemsCount!, style:
                             TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 12.0, color: Theme.of(context).accentColor, decoration: TextDecoration.none
                             ))
@@ -737,11 +737,11 @@ class _CartState extends State<_Cart> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                              text: "¥${widget.totalPrice.split(".")[0]}.",
+                              text: "¥${widget.totalPrice!.split(".")[0]}.",
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
                           ),
                           TextSpan(
-                              text: "${widget.totalPrice.split(".")[1]}",
+                              text: "${widget.totalPrice!.split(".")[1]}",
                               style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
                           )
                         ]
@@ -751,7 +751,7 @@ class _CartState extends State<_Cart> {
                   Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: ElevatedButton(
-                      onPressed: widget.onClickPlaceOrder,
+                      onPressed: widget.onClickPlaceOrder as void Function()?,
                       child: Text("下单")
                     ),
                   )
@@ -777,17 +777,17 @@ class _MenuState extends State<Menu>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: DetailAppBar(
-        restaurantName: Restaurant.sample().name,
-        restaurantImage: Restaurant.sample().restaurantImage,
-        restaurantSubName: Restaurant.sample().subName,
+        restaurantName: Restaurant.sample()!.name,
+        restaurantImage: Restaurant.sample()!.restaurantImage,
+        restaurantSubName: Restaurant.sample()!.subName,
         desk: "A10"
       ),
       body: GestureDetector(
           onTap: () { FocusScope.of(context).unfocus(); },
           behavior: HitTestBehavior.translucent,
-          child: _MenuBody(availableServices: Restaurant.sample().services,
+          child: _MenuBody(availableServices: Restaurant.sample()!.services,
             dishes:[Dish.sample(),Dish.sample2()],
-            dishTypes: Restaurant.sample().dishTypes,
+            dishTypes: Restaurant.sample()!.dishTypes,
           ),
       ),
       extendBody: true,

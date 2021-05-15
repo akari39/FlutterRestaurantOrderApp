@@ -12,7 +12,7 @@ ChildDish _$ChildDishFromJson(Map<String, dynamic> json) {
     name: json['name'] as String?,
     price: (json['price'] as num?)?.toDouble(),
     stock: json['stock'] as int?,
-    parentId: (json['parentId'] as num?)?.toDouble(),
+    parentId: json['parentId'] as int?,
     parentName: json['parentName'] as String?,
   );
 }

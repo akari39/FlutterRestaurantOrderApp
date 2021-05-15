@@ -6,8 +6,9 @@ import 'home.dart';
 
 class MyPage extends StatelessWidget {
   final String myUserName;
+  final BuildContext context;
 
-  MyPage({required this.myUserName});
+  MyPage(this.context, {required this.myUserName});
 
   @override
   Widget build(BuildContext context) {
@@ -18,34 +19,53 @@ class MyPage extends StatelessWidget {
       body: Column(
         children: [
           Center(child: Text("欢迎您，$myUserName", style: Theme.of(context).textTheme.headline6)),
-          ListView(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            children: [
-              Container(
-                height: 44,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                Container(
+                  height: 50,
                   child: InkWell(
-                    child: Text("查看历史订单"),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.history_outlined),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text("查看历史订单", style: TextStyle(fontSize: 17.0)),
+                          ),
+                        ],
+                      )
+                    ),
                     onTap: (){},
                   ),
                 ),
-              ),
-              Container(
-                height: 44,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+                Container(
+                  height: 50,
                   child: InkWell(
-                    child: Text("注销"),
-                    onTap: () {
-                      //TODO: delete user info
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Home()), (route) => true);
-                    },
-                  ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        child: Row(
+                          children: [
+                            Icon(Icons.exit_to_app_outlined),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text("注销", style: TextStyle(fontSize: 17.0)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        //TODO: delete user info
+                        Navigator.of(this.context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => Home()), (route) => false);
+                      },
+                    ),
                 ),
-              ),
-            ],
+              ],
+            ),
           )
         ],
       ),

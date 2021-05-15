@@ -115,10 +115,11 @@ class DetailAppBarState extends State<DetailAppBar>{
                 borderRadius: BorderRadius.circular(24.0)
               ),
               child: IconButton(
+                splashRadius: 24.0,
                 onPressed: (){
                   if(widget.onPressUser != null) widget.onPressUser!();
                   else{
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyPage(myUserName: "测试名")));
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyPage(this.context, myUserName: "测试名")));
                   }
                 },
                 padding: EdgeInsets.zero,

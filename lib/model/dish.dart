@@ -13,7 +13,7 @@ abstract class DishInfo {
 
 @JsonSerializable()
 class ChildDish extends DishInfo with Comparable{
-  double? parentId;
+  int? parentId;
   String? parentName;
   int? id;
   String? name;

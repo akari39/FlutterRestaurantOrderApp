@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         textTheme: TextTheme(
           headline6: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color(0xff222222)),
         ),
-      )
+      ),
     );
   }
 }

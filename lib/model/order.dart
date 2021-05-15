@@ -15,15 +15,15 @@ class Order {
 
 @JsonSerializable()
 class RequestChoice {
-  final String? name;
-  final String? childType;
+  final Dish? dish;
+  final ChildDish? childDish;
   final int? count;
-  final double? price;
+  final double? totalPrice;
 
-  RequestChoice(this.name, this.childType, this.count, this.price);
+  RequestChoice(this.dish, this.childDish, this.count, this.totalPrice);
 
   static fromChoice(Choice choice, List<Dish> dishes) {
-    if(choice.dishOfChoice is Dish) return RequestChoice((choice.dishOfChoice as Dish).name,null,choice.count,choice.price);
+    if(choice.dishOfChoice is Dish) return RequestChoice((choice.dishOfChoice as Dish),null,choice.count,choice.price);
     else {
       String? name;
       for(var dish in dishes) {
@@ -35,8 +35,8 @@ class RequestChoice {
         }
       }
       return RequestChoice(
-          name, (choice.dishOfChoice as ChildDish).name, choice.count,
-          choice.price);
+          null, (choice.dishOfChoice as ChildDish), choice.count, choice.price
+      );
     }
   }
 }

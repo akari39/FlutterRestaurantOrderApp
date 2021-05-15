@@ -8,17 +8,21 @@ part of 'order.dart';
 
 RequestChoice _$RequestChoiceFromJson(Map<String, dynamic> json) {
   return RequestChoice(
-    json['name'] as String?,
-    json['childType'] as String?,
+    json['dish'] == null
+        ? null
+        : Dish.fromJson(json['dish'] as Map<String, dynamic>),
+    json['childDish'] == null
+        ? null
+        : ChildDish.fromJson(json['childDish'] as Map<String, dynamic>),
     json['count'] as int?,
-    (json['price'] as num?)?.toDouble(),
+    (json['totalPrice'] as num?)?.toDouble(),
   );
 }
 
 Map<String, dynamic> _$RequestChoiceToJson(RequestChoice instance) =>
     <String, dynamic>{
-      'name': instance.name,
-      'childType': instance.childType,
+      'dish': instance.dish,
+      'childDish': instance.childDish,
       'count': instance.count,
-      'price': instance.price,
+      'totalPrice': instance.totalPrice,
     };

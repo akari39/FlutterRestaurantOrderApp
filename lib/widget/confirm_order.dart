@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wireless_order_system/model/dish.dart';
 import 'package:wireless_order_system/model/restaurant.dart';
-import 'package:wireless_order_system/model/wos_network.dart';
+import 'package:wireless_order_system/wos_network.dart';
 import 'package:wireless_order_system/widget/home.dart';
 import 'package:wireless_order_system/widget/order_detail.dart';
 

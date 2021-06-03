@@ -32,12 +32,13 @@ dependencies:
   marquee: ^2.1.0
   json_annotation: ^4.0.1
   modal_bottom_sheet: ^2.0.0
-  shared_preferences: ^0.5.4+1
+  shared_preferences: ^2.0.6
   http: ^0.13.1
-  sprintf: ^4.0.0
+  sprintf: ^6.0.0
   scan: ^1.4.3
   images_picker: ^1.2.4
-  permission_handler: ^7.1.0
+  permission_handler: ^8.0.0+2
+  fluttertoast: ^8.0.7
 
 dev_dependencies:
   flutter_test:

@@ -19,4 +19,8 @@ class ApiSection{
     required this.restaurantId,
     required this.dishes
   });
+
+  factory ApiSection.fromJson(Map<String, dynamic> json) => _$ApiSectionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ApiSectionToJson(this);
 }

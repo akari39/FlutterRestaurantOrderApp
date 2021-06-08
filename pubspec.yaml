@@ -33,7 +33,7 @@ dependencies:
   json_annotation: ^4.0.1
   modal_bottom_sheet: ^2.0.0
   shared_preferences: ^2.0.6
-  http: ^0.13.1
+  http: ^0.13.3
   sprintf: ^6.0.0
   scan: ^1.4.3
   images_picker: ^1.2.4

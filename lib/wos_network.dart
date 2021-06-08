@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -11,39 +12,70 @@ part 'wos_network.g.dart';
 class WOSNetwork {
   static final WOSNetwork _wosnetwork = WOSNetwork();
   static final http.Client _client = http.Client();
-  static final String _api = "http://128.199.161.136";
+  static final String _api = "http://128.199.161.136:3000";
   Map<String, String> get _headers {
     return {
-      "Content-Type": "application/json; charset=utf8",
-      "Authorization": Me.getInstance().token ?? ""
+      "Content-Type": "application/json; charset=utf-8",
+      if(Me.getInstance().token != null)
+        "Authorization": Me.getInstance().token!
     };
   }
 
-  WOSNetwork get instance {
+  static WOSNetwork get instance {
     return _wosnetwork;
   }
 
-  void get(String route, Map<String, dynamic> params, Function callback) async{
+  Future<void> get(String route, Map<String, dynamic> params, Function callback) async {
+    var response;
     try {
       http.Response uriResponse = await _client.get(Uri.http(_api, route, params), headers: this._headers);
       var apiResponse = ApiResponse.fromJson(json.decode(uriResponse.body));
       if(apiResponse.success) {
+        response = apiResponse.response;
+        log(response);
+        return;
+      } else {
+        Fluttertoast.showToast(msg: apiResponse.response.toString());
+      }
+    } catch(e) {
+      log(e.toString());
+      Fluttertoast.showToast(msg: "服务器错误"+e.toString());
+    }
+    await callback(null);
+  }
 
-        callback(apiResponse.response);
+  Future<void> post(String route, String body, Function callback) async{
+    var response;
+    try {
+      http.Response uriResponse = await _client.post(Uri.parse(_api+route), headers: _headers, body: body);
+      var apiResponse = ApiResponse.fromJson(json.decode(uriResponse.body));
+      if(apiResponse.success) {
+        response = apiResponse.response;
       } else {
         Fluttertoast.showToast(msg: "请求失败");
       }
     } catch(e) {
+      log(e.toString());
       Fluttertoast.showToast(msg: "服务器错误"+e.toString());
     }
+    await callback(response);
   }
 
-  void post(String route, Map<String, dynamic> json, Function callback) {
-
-  }
-
-  void delete(String route, Map<String, dynamic> json, Function callback) {
-
+  Future<void> delete(String route, String body, Function callback) async {
+    var response;
+    try {
+      http.Response uriResponse = await _client.delete(Uri.parse(_api+route), headers: _headers, body: body);
+      var apiResponse = ApiResponse.fromJson(json.decode(uriResponse.body));
+      if(apiResponse.success) {
+        response = apiResponse.response;
+      } else {
+        Fluttertoast.showToast(msg: "请求失败");
+      }
+    } catch(e) {
+      log(e.toString());
+      Fluttertoast.showToast(msg: "服务器错误"+e.toString());
+    }
+    await callback(response);
   }
 
 }

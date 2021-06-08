@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
       title: 'Startup Name Generator',
       theme: ThemeData(
         brightness: Brightness.light,
+        primarySwatch: Colors.amber,
         primaryColor: Color(0xffE3A20E),
         accentColor: Color(0xff222222),
         splashColor: Color(0xffE3A20E).withAlpha(42),

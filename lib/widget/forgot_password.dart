@@ -110,7 +110,7 @@ class _ForgotPassWordBodyState extends State<ForgotPassWordBody> {
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: "用户名/邮箱",
+                              labelText: "用户名",
                               errorText: _nameErrorMessage
                           ),
                           onChanged: (val) {

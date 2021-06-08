@@ -111,41 +111,6 @@ class _ChooseServiceState extends State<ChooseService> {
                         ],
                       )
                     ],
-                  ),
-                  Column(
-                    children: [
-                      Text("服务"),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: Card(
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(width: 2.0, color: chosenWaterService ? Colors.black26 : Theme.of(context).primaryColor),
-                              borderRadius: BorderRadius.circular(10)
-                            ),
-                            child: InkWell(
-                              onTap: () { setState(() {
-                                chosenWaterService = !chosenWaterService;
-                              });},
-                              borderRadius: BorderRadius.circular(10),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Icon(Icons.local_cafe_outlined, color: Theme.of(context).primaryColor, size: 35.0,)
-                                  ),
-                                  Text("倒水")
-                                ],
-                              ),
-                            )
-                          ),
-                        ),
-                      )
-                    ],
                   )
                 ],
               )

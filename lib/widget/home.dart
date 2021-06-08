@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:wireless_order_system/widget/register.dart';
-import 'package:wireless_order_system/widget/start.dart';
+import 'package:wireless_order_system/wos_network.dart';
+
+import '../me.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -59,8 +65,8 @@ class _HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<_HomeBody> {
-  String _loginName = "";
-  String _password = "";
+  String? _loginName;
+  String? _password;
   bool _isLoginEnabled = false;
 
   String? _nameErrorMessage; //show error in text field when request failed
@@ -75,20 +81,48 @@ class _HomeBodyState extends State<_HomeBody> {
     ));
   }
 
-  void onPressLogin() async {
+  Future<void> onPressLogin() async {
     FocusScope.of(context).unfocus();
-    _isLoading = true;
-    _isLoginEnabled = false;
-    //TODO：网络请求验证用户名和密码
-
-    Navigator.pushReplacementNamed(context, '/start');
+    setState(() {
+      _isLoading = true;
+      _isLoginEnabled = false;
+    });
+    if(_loginName == null || _password == null) return;
+    await WOSNetwork.instance.post("/auth/login",
+        json.encode({
+          "username": _loginName,
+          "password": _password
+        }), (response) async {
+      if(response != null) {
+        log(response.toString());
+        Map<String, dynamic> map = json.decode(json.encode(response));
+        Me.getInstance()
+            .userId = map["id"];
+        Me.getInstance()
+            .username = map["username"];
+        Me.getInstance()
+            .token = map["token"];
+        await Me.getInstance().save();
+        await Me.getInstance().load();
+        if(Me.getInstance().isEmpty()) {
+          Fluttertoast.showToast(msg: "保存失败");
+          return;
+        }
+        Navigator.pushReplacementNamed(context, '/start');
+      } else {
+        setState(() {
+          _isLoginEnabled = true;
+          _isLoading = false;
+        });
+      }
+    });
   }
 
   void toggleButtonEnabled() {
     _nameErrorMessage = null;
     _passwordErrorMessage = null;
 
-    if(_password.isNotEmpty && _password.length >= 8 && _loginName.isNotEmpty) {
+    if(_password != null && _password!.length >= 8 && _loginName != null) {
       _isLoginEnabled = true;
     } else {
       _isLoginEnabled = false;
@@ -175,6 +209,17 @@ class _HomeBodyState extends State<_HomeBody> {
 }
 
 class _HomeState extends State<Home> {
+  @override
+  void initState() {
+    super.initState();
+    Me.getInstance().load().then((future){
+      log("登录信息："+Me.getInstance().isEmpty().toString());
+      if(!Me.getInstance().isEmpty()) {
+        Navigator.pushReplacementNamed(context, '/start');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wireless_order_system/widget/start.dart';
 
+import '../me.dart';
 import 'home.dart';
 
 class MyPage extends StatelessWidget {
@@ -58,8 +59,8 @@ class MyPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      onTap: () {
-                        //TODO: delete user info
+                      onTap: () async {
+                        await Me.getInstance().clear();
                         Navigator.of(this.context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => Home()), (route) => false);
                       },
                     ),

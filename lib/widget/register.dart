@@ -1,7 +1,12 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:wireless_order_system/widget/home.dart';
+import 'package:wireless_order_system/wos_network.dart';
+
+import '../me.dart';
 
 class RegisterWidget extends StatefulWidget {
   @override
@@ -38,9 +43,40 @@ class _RegisterBodyState extends State<_RegisterBody> {
 
   TextEditingController _secondPasswordController = TextEditingController();
 
-  void _onPressRegister() async {
+  Future<void> _onPressRegister() async {
     FocusScope.of(context).unfocus();
-    _isLoading = true;
+    setState(() {
+      _isLoading = true;
+    });
+    if(_loginName.isEmpty || _password == null || _password == "") return;
+    await WOSNetwork.instance.post("/auth/register", json.encode(
+      {
+        "username": _loginName,
+        "password": _password
+      }
+    ), (response) async {
+      if(response != null) {
+        log(response.toString());
+        Map<String, dynamic> map = json.decode(json.encode(response));
+        Me.getInstance()
+            .userId = map["id"];
+        Me.getInstance()
+            .username = map["username"];
+        Me.getInstance()
+            .token = map["token"];
+        await Me.getInstance().save();
+        await Me.getInstance().load();
+        if(Me.getInstance().isEmpty()) {
+          Fluttertoast.showToast(msg: "保存失败");
+          return;
+        }
+        Navigator.pushReplacementNamed(context, '/start');
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });
   }
 
   void _toggleButtonEnabled() {
@@ -119,7 +155,7 @@ class _RegisterBodyState extends State<_RegisterBody> {
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: "用户名/邮箱",
+                            labelText: "用户名",
                             helperText: "用户名不可以包括空格",
                             errorText: _nameEdited ? _nameErrorMessage : null,
                             suffixIcon: _nameErrorMessage != null ? Icon(Icons.error_outline) : null

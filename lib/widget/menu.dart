@@ -1,12 +1,17 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:wireless_order_system/api_model/api_section.dart';
+import 'package:wireless_order_system/api_model/api_service.dart';
 import 'package:wireless_order_system/widget/cart_list.dart';
 import 'package:wireless_order_system/widget/dish_detail.dart';
 import 'package:wireless_order_system/model/restaurant.dart';
 import 'package:wireless_order_system/widget/start.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:wireless_order_system/wos_network.dart';
 
 import '../model/dish.dart';
 import 'confirm_order.dart';
@@ -312,7 +317,7 @@ class _ServiceIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch(service) {
-      case "倒茶": return Icon(Icons.local_cafe_outlined, color: Theme.of(context).primaryColor, size: 24.0); break;
+      case "倒茶": return Icon(Icons.local_cafe_outlined, color: Theme.of(context).primaryColor, size: 24.0);
       case "换盘": return Icon(Icons.dinner_dining, color: Theme.of(context).primaryColor, size: 24.0);
       case "招呼服务员": return Icon(Icons.room_service_outlined, color: Theme.of(context).primaryColor, size: 24.0);
       default: return Icon(Icons.assistant_outlined, color: Theme.of(context).primaryColor, size: 24.0);
@@ -362,7 +367,7 @@ class Services extends StatelessWidget{
       child: SizedBox(
         height: 58,
         child: ListView.builder(
-          padding: EdgeInsets.only(left: 16.0, right: 16.0),
+          padding: EdgeInsets.only(left: 12.0, right: 12.0),
           scrollDirection: Axis.horizontal,
           itemCount: availableServices!.length,
           itemBuilder: (context, index) {
@@ -374,7 +379,30 @@ class Services extends StatelessWidget{
                   ),
                   child: InkWell(
                     onTap: () {
-
+                      int? serviceid;
+                      if(!Restaurant.instance.isEmpty()) {
+                        if(Restaurant.instance.services != null) {
+                          if(Restaurant.instance.services!.isNotEmpty) {
+                            for(ApiService service in Restaurant.instance.services!) {
+                              if(service.name == availableServices![index]) {
+                                serviceid = service.id;
+                                break;
+                              }
+                            }
+                          }
+                        }
+                      }
+                      if(serviceid == null) {
+                        return;
+                      }
+                      WOSNetwork.instance.post(WOSNetwork.postOrder, json.encode({
+                            "orderForm": {
+                              "orderedBy": 0,
+                              "restaurantChildDeskId": Restaurant.deskId,
+                              "restaurantServiceId": serviceid
+                            }
+                          }), (message) { Fluttertoast.showToast(msg: message); }
+                        );
                     },
                     borderRadius: BorderRadius.circular(10),
                     child: Padding(
@@ -776,21 +804,29 @@ class Menu extends StatefulWidget {
 
 class _MenuState extends State<Menu>{
 
+  Map<String, String> convertDishTypesToMap(List<ApiSection> sections) {
+    Map<String, String> appSections = new Map();
+    sections.forEach((element) {
+      appSections[element.name] = element.imageUri;
+    });
+    return appSections;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: DetailAppBar(
-        restaurantName: Restaurant.sample()!.name,
-        restaurantImage: Restaurant.sample()!.restaurantImage,
-        restaurantSubName: Restaurant.sample()!.subName,
+        restaurantName: Restaurant.instance.name,
+        restaurantImage: Restaurant.instance.restaurantImage,
+        restaurantSubName: Restaurant.instance.subName,
         desk: "A10"
       ),
       body: GestureDetector(
           onTap: () { FocusScope.of(context).unfocus(); },
           behavior: HitTestBehavior.translucent,
-          child: _MenuBody(availableServices: Restaurant.sample()!.services,
+          child: _MenuBody(availableServices: Restaurant.instance.services != null ? Restaurant.instance.services!.map((e) => e.name).toList() : null,
             dishes:[Dish.sample(),Dish.sample2()],
-            dishTypes: Restaurant.sample()!.dishTypes,
+            dishTypes: convertDishTypesToMap(Restaurant.instance.dishTypes!),
           ),
       ),
       extendBody: true,

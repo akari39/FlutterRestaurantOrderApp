@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:scan/scan.dart';
+import 'package:wireless_order_system/model/restaurant.dart';
 
+import '../wos_network.dart';
 import 'choose_service.dart';
+import 'menu.dart';
 
 class ScanPage extends StatefulWidget {
 
@@ -15,13 +19,23 @@ class _ScanPageState extends State<ScanPage> {
   IconData lightIcon = Icons.flash_on;
   ScanController controller = ScanController();
 
-  void getResult(String result){
+  Future<void> getResult(String result) async {
     setState(() {
       _appBarBrightness = Brightness.light;
     });
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => ChooseService())
-    );
+    await WOSNetwork.instance.get(WOSNetwork.getRestaurant, {"childDeskId": result}, (data) {
+      if(data != null) {
+        Restaurant.initRestaurant(data);
+        Restaurant.deskId = int.parse(result);
+        if(!Restaurant.instance.isEmpty()) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => Menu())
+          );
+        } else {
+          Fluttertoast.showToast(msg: "获取餐厅失败");
+        }
+      }
+    });
   }
 
   Brightness _appBarBrightness = Brightness.dark;

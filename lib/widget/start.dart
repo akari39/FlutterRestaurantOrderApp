@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -29,106 +30,97 @@ class DetailAppBarState extends State<DetailAppBar>{
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Row(
-          children: [
-            if(widget.restaurantName != null)
-              Card(
-                color: Colors.white,
-                elevation: 1.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                margin: EdgeInsets.only(left: 16.0, right: 8.0, top: 8.0),
-                child: Padding(
-                  padding: EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0, right: 20.0),
-                  child: Row(
-                    children: [
-                      Row(
-                        children: [
-                          if(widget.restaurantImage != null)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 16.0),
-                              child: SizedBox(
-                                height: 42.0,
-                                width: 42.0,
-                                child: ClipRRect(
-                                  child: CachedNetworkImage(
-                                    fit: BoxFit.fill,
-                                    //httpHeaders: (),
-                                    imageUrl: widget.restaurantImage!,
-                                    placeholder: (context, url) => CircularProgressIndicator(),
-                                    errorWidget: (context, url, error) => Icon(Icons.error_outline),
-                                  ),
-                                    borderRadius: BorderRadius.circular(5.0)
-                                ),
-                              ),
-                            ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: 80.0,
-                                height: 22.0,
-                                child: Marquee(
-                                  text: widget.restaurantName!,
-                                  velocity: 20,
-                                  blankSpace: 20,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17
-                                  )
-                                ),
-                              ),
-                              if(widget.restaurantSubName != null)
-                                Text(widget.restaurantSubName!,
-                                  style: Theme.of(context).textTheme.caption
-                                )
-                            ],
-                          )
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                        child: RotatedBox(
-                          quarterTurns: 1,
-                          child: Divider()
+        child:
+        Card(
+          color: Colors.white,
+          elevation: 1.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          margin: EdgeInsets.only(left: 16.0, right: 8.0, top: 8.0),
+          child: Padding(
+            padding: EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0, right: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                  if(widget.restaurantImage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: SizedBox(
+                        height: 42.0,
+                        width: 42.0,
+                        child: ClipRRect(
+                          child: CachedNetworkImage(
+                            fit: BoxFit.fill,
+                            //httpHeaders: (),
+                            imageUrl: widget.restaurantImage!,
+                            placeholder: (context, url) => CircularProgressIndicator(),
+                            errorWidget: (context, url, error) => Icon(Icons.error_outline),
+                          ),
+                            borderRadius: BorderRadius.circular(5.0)
                         ),
                       ),
-                      if(widget.desk != null)
-                        Text(widget.desk!,
-                          style: TextStyle(
-                              color: Theme.of(context).accentColor,
-                              fontSize: 28.0,
-                              fontWeight: FontWeight.bold
-                          )
-                        )
-                    ],
-                  )
+                    ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            widget.restaurantName!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16
+                            )
+                          ),
+                        if(widget.restaurantSubName != null)
+                          Text(widget.restaurantSubName!,
+                              style: Theme.of(context).textTheme.caption
+                            ),
+                      ],
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                  child: RotatedBox(
+                    quarterTurns: 1,
+                    child: Divider()
+                  ),
                 ),
-              ),
-            Spacer(),
-            Card(
-              color: Colors.white,
-              elevation: 1.0,
-              margin: EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24.0)
-              ),
-              child: IconButton(
-                splashRadius: 24.0,
-                onPressed: (){
-                  if(widget.onPressUser != null) widget.onPressUser!();
-                  else{
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyPage(this.context, myUserName: "测试名")));
-                  }
-                },
-                padding: EdgeInsets.zero,
-                icon: Icon(Icons.person_outline),
-                color: Theme.of(context).primaryColor
-              )
-            )
-          ]
-        )
+                if(widget.desk != null)
+                  Text(widget.desk!,
+                    style: TextStyle(
+                        color: Theme.of(context).accentColor,
+                        fontSize: 28.0,
+                        fontWeight: FontWeight.bold
+                    )
+                  )
+              ],
+            ),
+          ),
+        ),
+      // Spacer(),
+      // Card(
+      //   color: Colors.white,
+      //   elevation: 1.0,
+      //   margin: EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(24.0)
+      //   ),
+      //   child: IconButton(
+      //     splashRadius: 24.0,
+      //     onPressed: (){
+      //       if(widget.onPressUser != null) widget.onPressUser!();
+      //       else{
+      //         Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyPage(this.context, myUserName: "测试名")));
+      //       }
+      //     },
+      //     padding: EdgeInsets.zero,
+      //     icon: Icon(Icons.person_outline),
+      //     color: Theme.of(context).primaryColor
+      //   )
+      // )
     );
   }
 }
@@ -162,7 +154,7 @@ class _StartState extends State<StartWidget>{
   @override
   Widget build(BuildContext context) {
     return Scaffold (
-      appBar: DetailAppBar(),
+      //appBar: DetailAppBar(),
       body: Center(
         child: Container(
           alignment: Alignment.center,

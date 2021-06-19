@@ -184,9 +184,11 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
         ),
         body: Column(
           children: [
-            Services(
-                availableServices: Restaurant.sample()!.services
-            ),
+            if(Restaurant.instance.services != null)
+              if(Restaurant.instance.services!.isNotEmpty)
+                Services(
+                    availableServices: Restaurant.instance.services!.map((e) => e.name).toList()
+                ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(

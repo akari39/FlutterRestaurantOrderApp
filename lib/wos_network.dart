@@ -4,20 +4,23 @@ import 'dart:developer';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
-
-import 'me.dart';
+import 'package:sprintf/sprintf.dart';
 
 part 'wos_network.g.dart';
 
 class WOSNetwork {
   static final WOSNetwork _wosnetwork = WOSNetwork();
   static final http.Client _client = http.Client();
-  static final String _api = "http://128.199.161.136:3000";
+  static final String _api = "http://app.xiofan2.com";
+
+  static final String getMenu = "/api/menuKind/getAllDishesByChildDesk";
+  static final String getRestaurant = "/api/menuKind/getRestaurantByChildDesk";
+  //static final String getRestaurant
+  static final String postOrder = "/api/order/operate";
+
   Map<String, String> get _headers {
     return {
       "Content-Type": "application/json; charset=utf-8",
-      if(Me.getInstance().token != null)
-        "Authorization": Me.getInstance().token!
     };
   }
 
@@ -31,11 +34,18 @@ class WOSNetwork {
       http.Response uriResponse = await _client.get(Uri.http(_api, route, params), headers: this._headers);
       var apiResponse = ApiResponse.fromJson(json.decode(uriResponse.body));
       if(apiResponse.success) {
-        response = apiResponse.response;
+        if(apiResponse.data != null) {
+          response = apiResponse.data;
+        } else if(apiResponse.message != null) {
+          response = apiResponse.message;
+        } else {
+          response = null;
+        }
         log(response);
+        await callback(response);
         return;
       } else {
-        Fluttertoast.showToast(msg: apiResponse.response.toString());
+        Fluttertoast.showToast(msg: apiResponse.data.toString());
       }
     } catch(e) {
       log(e.toString());
@@ -50,7 +60,7 @@ class WOSNetwork {
       http.Response uriResponse = await _client.post(Uri.parse(_api+route), headers: _headers, body: body);
       var apiResponse = ApiResponse.fromJson(json.decode(uriResponse.body));
       if(apiResponse.success) {
-        response = apiResponse.response;
+        response = apiResponse.data;
       } else {
         Fluttertoast.showToast(msg: "请求失败");
       }
@@ -62,12 +72,12 @@ class WOSNetwork {
   }
 
   Future<void> delete(String route, String body, Function callback) async {
-    var response;
+    var data;
     try {
       http.Response uriResponse = await _client.delete(Uri.parse(_api+route), headers: _headers, body: body);
       var apiResponse = ApiResponse.fromJson(json.decode(uriResponse.body));
       if(apiResponse.success) {
-        response = apiResponse.response;
+        data = apiResponse.data;
       } else {
         Fluttertoast.showToast(msg: "请求失败");
       }
@@ -75,17 +85,23 @@ class WOSNetwork {
       log(e.toString());
       Fluttertoast.showToast(msg: "服务器错误"+e.toString());
     }
-    await callback(response);
+    await callback(data);
   }
 
+}
+
+extension StringFormatExtension on String {
+  String format(var arguments) => sprintf(this, arguments);
 }
 
 @JsonSerializable()
 class ApiResponse {
   bool success;
-  dynamic response;
+  String? message;
+  bool? notLogin;
+  dynamic data;
 
-  ApiResponse({required this.success, required this.response});
+  ApiResponse({required this.success, required this.message, required this.notLogin, required this.data});
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) => _$ApiResponseFromJson(json);
 

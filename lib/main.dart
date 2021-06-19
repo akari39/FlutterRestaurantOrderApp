@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(MyApp.style);
 
     return MaterialApp(
-      initialRoute: '/',
+      initialRoute: '/start',
       routes: {
         '/': (context) => Home(),
         '/start': (context) => StartWidget()

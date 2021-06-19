@@ -25,16 +25,18 @@ class _OrderDetailState extends State<OrderDetail>{
       onWillPop: () async { return true; },
       child: Scaffold(
         appBar: DetailAppBar(
-          restaurantName: Restaurant.sample()!.name,
-          restaurantSubName: Restaurant.sample()!.subName,
-          restaurantImage: Restaurant.sample()!.restaurantImage,
+          restaurantName: Restaurant.instance.name,
+          restaurantSubName: Restaurant.instance.subName,
+          restaurantImage: Restaurant.instance.restaurantImage,
           desk: "A10"
         ),
         body: Column(
           children: [
-            Services(
-              availableServices: Restaurant.sample()!.services
-            ),
+            if(Restaurant.instance.services != null)
+              if(Restaurant.instance.services!.isNotEmpty)
+                Services(
+                  availableServices: Restaurant.instance.services!.map((e) => e.name).toList()
+                ),
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Container(

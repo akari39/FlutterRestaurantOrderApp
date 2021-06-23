@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'dish.g.dart';
@@ -15,17 +17,13 @@ abstract class DishInfo {
 class ChildDish extends DishInfo with Comparable{
   int? parentId;
   String? parentName;
-  int? id;
-  String? name;
-  double? price;
-  int? stock;
 
   @override operator ==(Object object) => object is ChildDish && object.id == id;
 
   @override
   int get hashCode => id!;
   
-  ChildDish({this.id,this.name, this.price, this.stock,this.parentId,this.parentName}){
+  ChildDish({int? id, String? name, double? price, int? stock, this.parentId, this.parentName}) {
     super.id = id;
     super.stock = stock;
     super.name = name;
@@ -35,6 +33,11 @@ class ChildDish extends DishInfo with Comparable{
   factory ChildDish.fromJson(Map<String, dynamic> json) => _$ChildDishFromJson(json);
 
   Map<String, dynamic> toJson() => _$ChildDishToJson(this);
+
+  @override
+  String toString() {
+    return 'ChildDish{id: $id, name: $name, stock: $stock, price: $price, parentId: $parentId, parentName: $parentName}';
+  }
 
   @override
   bool operator <(Dish dish) => dish.id! > this.id!;
@@ -52,13 +55,9 @@ class ChildDish extends DishInfo with Comparable{
 
 @JsonSerializable()
 class Dish extends DishInfo{
-  int? id;
   String? image;
-  String? name;
   String? description;
   String? dishTypes;
-  double? price;
-  int? stock;
   List<ChildDish>? childTypes;
 
   static const int intPrice = 0;
@@ -67,7 +66,7 @@ class Dish extends DishInfo{
   static const int multiType = 2;
   static const int singleType = 3;
 
-  Dish({this.id, this.image, this.name, this.description,this.dishTypes, this.price, this.stock, this.childTypes}){
+  Dish({int? id, this.image, String? name, this.description, this.dishTypes, double? price, int? stock, this.childTypes}){
     super.id = id;
     super.stock = stock;
     super.name = name;
@@ -77,7 +76,7 @@ class Dish extends DishInfo{
   @override
   int get hashCode => id!;
 
-  int get cpType => childTypes == null ? singleType : multiType;
+  int get cpType => childTypes == null || childTypes!.isEmpty ? singleType : multiType;
 
   bool operator ==(Object other) {
     return other is Dish && other.id == id;
@@ -87,6 +86,11 @@ class Dish extends DishInfo{
 
   Map<String, dynamic> toJson() => _$DishToJson(this);
 
+  @override
+  String toString() {
+    return 'Dish{id: $id, image: $image, name: $name, description: $description, dishTypes: $dishTypes, price: $price, stock: $stock, childTypes: $childTypes, childTypesIsEmpty: ${childTypes?.isEmpty}, cpType: $cpType}';
+  }
+
   static Dish sample() {
     return Dish(
         id: 1,
@@ -94,6 +98,8 @@ class Dish extends DishInfo{
         name: "测试菜品",
         description: "描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述",
         dishTypes: "测试品类1",
+        price: 0.0,
+        stock: 0,
         childTypes: [
           ChildDish(
             id: 201,
@@ -156,7 +162,7 @@ class Dish extends DishInfo{
         element) =>
     value.price! < element.price!
         ? value
-        : element)).price).toString().split(".")[type];
+        : element)).price)!.toStringAsFixed(2).split(".")[type];
 
   int? getChildDishesMaxStock() {
     assert(childTypes != null);
@@ -166,7 +172,6 @@ class Dish extends DishInfo{
 
   @override
   bool operator <(Dish dish) => dish.id! > this.id!;
-
 }
 
 class Choice {
@@ -176,6 +181,14 @@ class Choice {
   double? price;
 
   DishInfo get dishOfChoice => dish != null ? dish! : childDish!;
+
+  set dishOfChoice(DishInfo dish) {
+    if(dish is Dish) {
+      this.dish = dish;
+    } else {
+      childDish = dish as ChildDish?;
+    }
+  }
 
   Choice({this.dish, this.childDish, this.count, this.price});
 

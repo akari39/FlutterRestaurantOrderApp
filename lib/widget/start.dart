@@ -1,12 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:marquee/marquee.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:wireless_order_system/widget/choose_service.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wireless_order_system/widget/scan_qrcode.dart';
-
-import 'my.dart';
 
 class DetailAppBar extends StatefulWidget implements PreferredSizeWidget{
   final String? restaurantName;
@@ -37,7 +33,7 @@ class DetailAppBarState extends State<DetailAppBar>{
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
-          margin: EdgeInsets.only(left: 16.0, right: 8.0, top: 8.0),
+          margin: EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
           child: Padding(
             padding: EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0, right: 20.0),
             child: Row(

@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wireless_order_system/model/dish.dart';
+import 'package:wireless_order_system/model/order.dart';
 import 'package:wireless_order_system/model/restaurant.dart';
 import 'package:wireless_order_system/wos_network.dart';
 import 'package:wireless_order_system/widget/home.dart';
@@ -48,7 +50,7 @@ class OrderList extends StatelessWidget {
                               height: 80,
                               imageUrl: choices![index].dish != null ? choices![index].dish!.image! :
                               dishes!.where((element) =>
-                              element.childTypes != null ? element.childTypes!.contains(choices![index].childDish) : false).toList()[0].image!,
+                              element.cpType == Dish.multiType ? element.childTypes!.contains(choices![index].childDish) : false).toList()[0].image!,
                               fit: BoxFit.fill,
                               placeholder: (context, url) => CircularProgressIndicator(),
                               errorWidget: (context, url, error) => Icon(Icons.error_outline)
@@ -154,7 +156,47 @@ class ConfirmOrder extends StatefulWidget {
 class _ConfirmOrderState extends State<ConfirmOrder> {
 
   submitOrder() async {
+    List<RequestChoice> reqChoices = [];
+    widget.choices!.forEach((choice) {
+      reqChoices.add(RequestChoice.fromChoice(choice, widget.dishes!));
+    });
+    Map<String, dynamic> orderForm = {
+      "orderedBy": "7",
+      "restaurantChildDeskId": Restaurant.deskId!,
+      "restaurantId": Restaurant.instance.id!.toString(),
+      "restaurantServiceId": 1,
+      "totalPrice": double.parse(widget.totalPrice!)
+    };
 
+    List<Map<String, dynamic>> childOrderForm = [];
+    reqChoices.forEach((reqChoice) {
+      childOrderForm.add({
+        "childDishId": reqChoice.childDish?.id,
+        "count": reqChoice.count,
+        "dishId": reqChoice.dish!.id,
+        "price": reqChoice.totalPrice
+      });
+    });
+
+    WOSNetwork.instance.post(WOSNetwork.postOrder, json.encode({
+      "childOrderForm": childOrderForm,
+      "orderForm": orderForm
+    }), (response) {
+      inConfirmPage = false;
+      Navigator.pushAndRemoveUntil(
+          this.context,
+          MaterialPageRoute(
+              builder: (context) {
+                return OrderDetail(
+                    totalPrice: widget.totalPrice,
+                    choices: widget.choices,
+                    dishes: widget.dishes
+                );
+              }
+          ),
+          (check) => false
+      );
+    });
   }
 
   bool inConfirmPage = true;
@@ -258,20 +300,6 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                           ElevatedButton(
                             onPressed: () async {
                               await submitOrder();
-                              inConfirmPage = false;
-                              Navigator.pushAndRemoveUntil(
-                                  this.context,
-                                  MaterialPageRoute(
-                                  builder: (context) {
-                                    return OrderDetail(
-                                        totalPrice: widget.totalPrice,
-                                        choices: widget.choices,
-                                        dishes: widget.dishes
-                                      );
-                                    }
-                                  ),
-                                  (check) => false
-                              );
                             },
                             child: Text("提交")
                           )

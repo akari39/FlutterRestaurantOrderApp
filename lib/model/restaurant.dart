@@ -7,7 +7,7 @@ part 'restaurant.g.dart';
 
 @JsonSerializable()
 class Restaurant {
-  String? id;
+  int? id;
   String? name;
   String? subName;
   String? restaurantImage;
@@ -24,8 +24,8 @@ class Restaurant {
 
   Map<String, dynamic> toJson() => _$RestaurantToJson(this);
   
-  static void initRestaurant(Map<String, dynamic> data) {
-    _restaurant = Restaurant.fromJson(data);
+  static void initRestaurant(List<dynamic> data) {
+    _restaurant = Restaurant.fromJson(data[0]);
   }
   
   static Restaurant get instance {

@@ -55,7 +55,7 @@ class _LeftColumnState extends State<_LeftColumn>{
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: CachedNetworkImage(imageUrl: widget.dishTypes!.values.elementAt(index),
-                    fit: BoxFit.fill,
+                    fit: BoxFit.fitHeight,
                     height: 35,
                     width: 35,
                     placeholder: (context, url) => CircularProgressIndicator(),
@@ -218,7 +218,7 @@ class _RightColumnState extends State<_RightColumn>{
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Choice.isInChosenList(widget.chosenList!, widget.dishList![index]) && widget.dishList![index].childTypes == null ?
+                                Choice.isInChosenList(widget.chosenList!, widget.dishList![index]) && widget.dishList![index].cpType == Dish.singleType ?
                                 Padding(
                                   padding: const EdgeInsets.only(top: 5.0),
                                   child: Row(
@@ -242,7 +242,7 @@ class _RightColumnState extends State<_RightColumn>{
                                 )
                                 : InkWell(
                                       borderRadius: BorderRadius.circular(10.0),
-                                      onTap: widget.dishList![index].stock != null ?
+                                      onTap: widget.dishList![index].cpType == Dish.singleType ?
                                         widget.dishList![index].stock! > 0 ? () { widget.onAdd!(widget.dishList![index]); } : null :
                                           () { pushDetail(widget.dishList![index], Choice.getChoices(widget.chosenList!, widget.dishList![index])); },
                                       child: (widget.dishList![index].stock != null ?
@@ -396,12 +396,20 @@ class Services extends StatelessWidget{
                         return;
                       }
                       WOSNetwork.instance.post(WOSNetwork.postOrder, json.encode({
+                            "childOrderForm": [{
+                              "dishId": 0,
+                              "childDishId": 0,
+                              "count": 0,
+                              "price": 0
+                            }],
                             "orderForm": {
-                              "orderedBy": 0,
+                              "orderedBy": "7",
                               "restaurantChildDeskId": Restaurant.deskId,
-                              "restaurantServiceId": serviceid
+                              "restaurantId": Restaurant.instance.id!.toString(),
+                              "restaurantServiceId": serviceid,
+                              "totalPrice": 0
                             }
-                          }), (message) { Fluttertoast.showToast(msg: message); }
+                          }), (message) { Fluttertoast.showToast(msg: "请求已发送"); }
                         );
                     },
                     borderRadius: BorderRadius.circular(10),
@@ -590,7 +598,7 @@ class _MenuBodyState extends State<_MenuBody> {
     totalPrice = 0.0;
     setState(() {
       choices.forEach((element) {
-        element.price = (element.childDish == null) ? element.dish!.price : element.childDish!.price! * element.count!;
+        element.price = (element.childDish == null) ? element.dish!.price! * element.count!: element.childDish!.price! * element.count!;
         totalPrice += element.price!;
       });
     });
@@ -658,7 +666,8 @@ class _MenuBodyState extends State<_MenuBody> {
                           });
                         } else {
                           setState(() {
-                            Choice.getSingleChoice(choices, dish)!.count = Choice.getSingleChoice(choices, dish)!.count! + 1;
+                            int count = Choice.getSingleChoice(choices, dish)!.count!;
+                            Choice.getSingleChoice(choices, dish)!.count = count + 1;
                             overlayEntry!.markNeedsBuild();
                           });
                         }
@@ -797,12 +806,21 @@ class _CartState extends State<_Cart> {
 }
 
 class Menu extends StatefulWidget {
+  final List<Dish> dishes;
+
+  const Menu({Key? key, required this.dishes}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _MenuState();
 }
 
 class _MenuState extends State<Menu>{
+
+  @override
+  void initState(){
+    super.initState();
+    log(widget.dishes.toString());
+  }
 
   Map<String, String> convertDishTypesToMap(List<ApiSection> sections) {
     Map<String, String> appSections = new Map();
@@ -819,13 +837,13 @@ class _MenuState extends State<Menu>{
         restaurantName: Restaurant.instance.name,
         restaurantImage: Restaurant.instance.restaurantImage,
         restaurantSubName: Restaurant.instance.subName,
-        desk: "A10"
+        desk: Restaurant.deskId.toString()
       ),
       body: GestureDetector(
           onTap: () { FocusScope.of(context).unfocus(); },
           behavior: HitTestBehavior.translucent,
           child: _MenuBody(availableServices: Restaurant.instance.services != null ? Restaurant.instance.services!.map((e) => e.name).toList() : null,
-            dishes:[Dish.sample(),Dish.sample2()],
+            dishes: widget.dishes,
             dishTypes: convertDishTypesToMap(Restaurant.instance.dishTypes!),
           ),
       ),

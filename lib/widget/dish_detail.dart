@@ -93,7 +93,7 @@ class DishDetailState extends State<DishDetail>{
             height: MediaQuery.of(context).size.width,
             placeholder: (context, url) => CircularProgressIndicator(),
             errorWidget: (context, url, error) => Icon(Icons.error_outline),
-            fit: BoxFit.fill,
+            fit: BoxFit.fitHeight,
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -140,7 +140,7 @@ class DishDetailState extends State<DishDetail>{
                                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor)
                                       ),
                                       TextSpan(
-                                          text: "${widget.dish!.cpType == Dish.multiType ? widget.dish!.childTypes![choiceType].price.toString().split(".")[1] : widget.dish!.getPriceString(Dish.decimalPrice)}",
+                                          text: "${widget.dish!.cpType == Dish.multiType ? widget.dish!.childTypes![choiceType].price!.toStringAsFixed(2).split(".")[1] : widget.dish!.getPriceString(Dish.decimalPrice)}",
                                           style: TextStyle(fontSize: 17, color: Theme.of(context).accentColor)
                                       )
                                     ]

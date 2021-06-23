@@ -18,12 +18,12 @@ ChildDish _$ChildDishFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$ChildDishToJson(ChildDish instance) => <String, dynamic>{
-      'parentId': instance.parentId,
-      'parentName': instance.parentName,
       'id': instance.id,
       'name': instance.name,
-      'price': instance.price,
       'stock': instance.stock,
+      'price': instance.price,
+      'parentId': instance.parentId,
+      'parentName': instance.parentName,
     };
 
 Dish _$DishFromJson(Map<String, dynamic> json) {
@@ -43,11 +43,11 @@ Dish _$DishFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$DishToJson(Dish instance) => <String, dynamic>{
       'id': instance.id,
-      'image': instance.image,
       'name': instance.name,
+      'stock': instance.stock,
+      'price': instance.price,
+      'image': instance.image,
       'description': instance.description,
       'dishTypes': instance.dishTypes,
-      'price': instance.price,
-      'stock': instance.stock,
       'childTypes': instance.childTypes,
     };

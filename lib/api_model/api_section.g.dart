@@ -12,8 +12,8 @@ ApiSection _$ApiSectionFromJson(Map<String, dynamic> json) {
     name: json['name'] as String,
     imageUri: json['imageUri'] as String,
     restaurantId: json['restaurantId'] as int,
-    dishes: (json['dishes'] as List<dynamic>)
-        .map((e) => ApiDish.fromJson(e as Map<String, dynamic>))
+    dishes: (json['dishes'] as List<dynamic>?)
+        ?.map((e) => ApiDish.fromJson(e as Map<String, dynamic>))
         .toList(),
   );
 }

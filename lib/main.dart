@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/start',
       routes: {
-        '/': (context) => Home(),
         '/start': (context) => StartWidget()
       },
       title: 'Startup Name Generator',

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:wireless_order_system/model/dish.dart';
-import 'package:wireless_order_system/model/order.dart';
 import 'package:wireless_order_system/model/restaurant.dart';
 import 'package:wireless_order_system/widget/confirm_order.dart';
 import 'package:wireless_order_system/widget/start.dart';
 
+import '../wos_network.dart';
 import 'menu.dart';
 
 class OrderDetail extends StatefulWidget {
@@ -28,7 +28,7 @@ class _OrderDetailState extends State<OrderDetail>{
           restaurantName: Restaurant.instance.name,
           restaurantSubName: Restaurant.instance.subName,
           restaurantImage: Restaurant.instance.restaurantImage,
-          desk: "A10"
+          desk: Restaurant.deskId.toString()
         ),
         body: Column(
           children: [
@@ -55,13 +55,18 @@ class _OrderDetailState extends State<OrderDetail>{
                       ),
                       ElevatedButton.icon(
                           onPressed: (){
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return Menu();
-                                }
-                              )
-                            );
+                            WOSNetwork.instance.get(WOSNetwork.getMenu, {"childDeskId": Restaurant.deskId.toString()}, (data) {
+                              List<Dish> dishes = [];
+                              data.forEach((element) {
+                                Dish dish = Dish.fromJson(element);
+                                this.setState(() {
+                                  dishes.add(dish);
+                                });
+                              });
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => Menu(dishes: dishes))
+                              );
+                            });
                           },
                           icon: Icon(Icons.menu_book_outlined),
                           label: Text("返回菜单")

@@ -63,7 +63,7 @@ class _CartListState extends State<CartList>{
                     height: 80,
                     imageUrl: widget.choices![index].dish != null ? widget.choices![index].dish!.image! :
                     widget.dishes!.where((element) =>
-                    element.childTypes != null ? element.childTypes!.contains(widget.choices![index].childDish) : false).toList()[0].image!,
+                    element.cpType == Dish.multiType ? element.childTypes!.contains(widget.choices![index].childDish) : false).toList()[0].image!,
                     fit: BoxFit.fill,
                     placeholder: (context, url) => CircularProgressIndicator(),
                     errorWidget: (context, url, error) => Icon(Icons.error_outline)

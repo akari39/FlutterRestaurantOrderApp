@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:wireless_order_system/api_model/api_child_dish.dart';
 import 'package:wireless_order_system/api_model/api_dish.dart';
 
 part 'api_section.g.dart';
@@ -10,7 +9,7 @@ class ApiSection{
   String name;
   String imageUri;
   int restaurantId;
-  List<ApiDish> dishes;
+  List<ApiDish>? dishes;
 
   ApiSection({
     required this.id,

@@ -9,8 +9,8 @@ part of 'wos_network.dart';
 ApiResponse _$ApiResponseFromJson(Map<String, dynamic> json) {
   return ApiResponse(
     success: json['success'] as bool,
-    message: json['message'] as String,
-    notLogin: json['notLogin'] as bool,
+    message: json['message'] as String?,
+    notLogin: json['notLogin'] as bool?,
     data: json['data'],
   );
 }

@@ -11,7 +11,7 @@ part 'wos_network.g.dart';
 class WOSNetwork {
   static final WOSNetwork _wosnetwork = WOSNetwork();
   static final http.Client _client = http.Client();
-  static final String _api = "http://app.xiofan2.com";
+  static final String _api = "app.xiofan2.com";
 
   static final String getMenu = "/api/menuKind/getAllDishesByChildDesk";
   static final String getRestaurant = "/api/menuKind/getRestaurantByChildDesk";
@@ -41,14 +41,13 @@ class WOSNetwork {
         } else {
           response = null;
         }
-        log(response);
         await callback(response);
         return;
       } else {
         Fluttertoast.showToast(msg: apiResponse.data.toString());
       }
-    } catch(e) {
-      log(e.toString());
+    } catch(e, stacktrace) {
+      log(e.toString(), name: "WOSNetwork", stackTrace: stacktrace);
       Fluttertoast.showToast(msg: "服务器错误"+e.toString());
     }
     await callback(null);
@@ -57,7 +56,9 @@ class WOSNetwork {
   Future<void> post(String route, String body, Function callback) async{
     var response;
     try {
-      http.Response uriResponse = await _client.post(Uri.parse(_api+route), headers: _headers, body: body);
+      http.Response uriResponse = await _client.post(Uri.parse("http://"+_api+route), headers: _headers, body: body);
+      log(Uri.parse("http://"+_api+route).toString(), name: "WOSNetwork");
+      log(uriResponse.body, name: "WOSNetwork");
       var apiResponse = ApiResponse.fromJson(json.decode(uriResponse.body));
       if(apiResponse.success) {
         response = apiResponse.data;
@@ -76,13 +77,14 @@ class WOSNetwork {
     try {
       http.Response uriResponse = await _client.delete(Uri.parse(_api+route), headers: _headers, body: body);
       var apiResponse = ApiResponse.fromJson(json.decode(uriResponse.body));
+      log(uriResponse.body, name: "WOSNetwork");
       if(apiResponse.success) {
         data = apiResponse.data;
       } else {
         Fluttertoast.showToast(msg: "请求失败");
       }
-    } catch(e) {
-      log(e.toString());
+    } catch(e, stacktrace) {
+      log(e.toString(), name: "WOSNetwork", stackTrace: stacktrace);
       Fluttertoast.showToast(msg: "服务器错误"+e.toString());
     }
     await callback(data);

@@ -23,19 +23,19 @@ class RequestChoice {
   RequestChoice(this.dish, this.childDish, this.count, this.totalPrice);
 
   static fromChoice(Choice choice, List<Dish> dishes) {
-    if(choice.dishOfChoice is Dish) return RequestChoice((choice.dishOfChoice as Dish),null,choice.count,choice.price);
+    if(choice.dishOfChoice is Dish) return RequestChoice((choice.dishOfChoice as Dish),new ChildDish(id: -1),choice.count,choice.price);
     else {
-      String? name;
+      Dish parentDish = new Dish();
       for(var dish in dishes) {
-        if (dish.childTypes != null) {
+        if (dish.cpType == Dish.multiType) {
           if(dish.childTypes!.contains(choice.childDish)) {
-            name = dish.name;
+            parentDish = dish;
             break;
           }
         }
       }
       return RequestChoice(
-          null, (choice.dishOfChoice as ChildDish), choice.count, choice.price
+          parentDish, (choice.dishOfChoice as ChildDish), choice.count, choice.price
       );
     }
   }
